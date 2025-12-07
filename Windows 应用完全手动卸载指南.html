@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 应用完全手动卸载指南 - Jrafina的博客小站</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 文章页面特定样式 */
+        .article-main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+        
+        /* 文章导航侧边栏 */
+        .article-sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .article-sidebar h3 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .article-toc {
+            list-style: none;
+        }
+        
+        .article-toc li {
+            margin-bottom: 12px;
+        }
+        
+        .article-toc a {
+            color: #94a3b8;
+            text-decoration: none;
+            display: block;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            cursor: none;
+        }
+        
+        .article-toc a:hover {
+            color: #f1f5f9;
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .article-toc .toc-h2 {
+            margin-left: 15px;
+            font-size: 0.85em;
+        }
+        
+        /* 文章内容区域 */
+        .article-content-wrapper {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-height: 800px;
+        }
+        
+        .article-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .article-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .article-meta {
+            color: #94a3b8;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .article-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        /* 文章内容样式 - 保持原有结构，仅调整颜色和间距 */
+        .article-body {
+            line-height: 1.8;
+            color: #e2e8f0;
+        }
+        
+        /* 标题样式 */
+        .article-body h1,
+        .article-body h2,
+        .article-body h3,
+        .article-body h4,
+        .article-body h5,
+        .article-body h6 {
+            color: #f1f5f9;
+            margin-top: 2em;
+            margin-bottom: 1em;
+            font-weight: 600;
+        }
+        
+        .article-body h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            padding-bottom: 10px;
+            margin-top: 1.5em;
+        }
+        
+        .article-body h2 {
+            font-size: 1.8em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        
+        .article-body h3 {
+            font-size: 1.5em;
+        }
+        
+        /* 段落样式 */
+        .article-body p {
+            margin: 1.2em 0;
+            color: #e2e8f0;
+        }
+        
+        /* 链接样式 */
+        .article-body a {
+            color: #06b6d4;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .article-body a:hover {
+            color: #8b5cf6;
+            text-decoration: underline;
+        }
+        
+        /* 引用块样式 */
+        .article-body blockquote {
+            border-left: 4px solid #6366f1;
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 0 8px 8px 0;
+            color: #cbd5e1;
+        }
+        
+        /* 表格样式 */
+        .article-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .article-body table th {
+            background: rgba(99, 102, 241, 0.2);
+            color: #f1f5f9;
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .article-body table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+        
+        .article-body table tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        /* 图片样式 */
+        .article-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 25px 0;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 水平线样式 */
+        .article-body hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            margin: 40px 0;
+        }
+        
+        /* 列表样式 */
+        .article-body ul,
+        .article-body ol {
+            margin: 20px 0;
+            padding-left: 30px;
+            color: #e2e8f0;
+        }
+        
+        .article-body li {
+            margin: 10px 0;
+        }
+        
+        /* 代码块样式 - 完全保留原始结构 */
+        .md-fences {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        /* 行内代码样式 */
+        .article-body code:not(.md-fences code) {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #f1f5f9;
+            font-size: 0.9em;
+        }
+        
+        /* 文章操作按钮 */
+        .article-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .article-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: #f1f5f9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: none;
+        }
+        
+        .article-btn:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+            border-color: transparent;
+        }
+        
+        /* 返回按钮 */
+        .back-to-home {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: #f1f5f9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: none;
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            border-color: transparent;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .article-main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 20px;
+            }
+            
+            .article-sidebar {
+                position: static;
+                order: 2;
+            }
+            
+            .article-content-wrapper {
+                order: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .article-content-wrapper {
+                padding: 30px 20px;
+            }
+            
+            .article-title {
+                font-size: 2em;
+            }
+            
+            .back-to-home {
+                top: 20px;
+                left: 20px;
+            }
+            
+            .back-btn span {
+                display: none;
+            }
+            
+            .back-btn {
+                padding: 12px;
+                border-radius: 50%;
+            }
+            
+            .article-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .article-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景效果 -->
+    <div class="background-effects">
+        <div class="gradient-orbs orb-1"></div>
+        <div class="gradient-orbs orb-2"></div>
+    </div>
+
+    <!-- 返回按钮 -->
+    <div class="back-to-home">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </div>
+
+    <div class="article-main-container">
+        <!-- 文章导航侧边栏 -->
+        <aside class="article-sidebar">
+            <h3>文章目录</h3>
+            <ul class="article-toc">
+<li><a href="#概述">概述</a></li>
+<li><a href="#一准备工作">一、准备工作</a></li>
+<li class="toc-h2"><a href="#11-创建系统还原点">1.1 创建系统还原点</a></li>
+<li class="toc-h2"><a href="#12-备份注册表">1.2 备份注册表</a></li>
+<li><a href="#二标准卸载流程">二、标准卸载流程</a></li>
+<li><a href="#三手动删除残留文件">三、手动删除残留文件</a></li>
+<li class="toc-h2"><a href="#31-程序安装目录">3.1 程序安装目录</a></li>
+<li class="toc-h2"><a href="#32-临时文件">3.2 临时文件</a></li>
+<li><a href="#四清理注册表残留">四、清理注册表残留</a></li>
+<li class="toc-h2"><a href="#41-打开注册表编辑器">4.1 打开注册表编辑器</a></li>
+<li class="toc-h2"><a href="#42-搜索并删除相关项按f3继续搜索）">4.2 搜索并删除相关项（按F3继续搜索）</a></li>
+<li><a href="#五-环境变量">五、 环境变量</a></li>
+            </ul>
+        </aside>
+
+        <!-- 文章内容区域 -->
+        <main class="article-content-wrapper">
+            <header class="article-header">
+                <h1 class="article-title">Windows 应用完全手动卸载指南</h1>
+                <div class="article-meta">
+                    <span class="article-tag">教程归纳</span>
+                    <span>•</span>
+                    <span>上传时间：2025-12-07</span>
+                </div>
+            </header>
+
+            <div class="article-body">
+                <!-- 以下是原有的文章内容 -->
+<div class="" id="write"><h1 id="概述"><span>概述</span></h1><p><span>当Windows应用无法通过正常方式卸载，或卸载后仍有残留时，需要手动彻底清理。本教程将详细指导您如何完全手动卸载应用，包括文件、注册表、服务等所有残留。</span></p><blockquote><p><span>⚠️ </span><strong><span>警告</span></strong><span>：手动修改注册表和系统文件有风险，请务必先创建系统还原点或备份重要数据。</span></p></blockquote><h1 id="一准备工作"><span>一、准备工作</span></h1><h2 id="11-创建系统还原点"><span>1.1 创建系统还原点</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. 按 `Win + R` 打开运行对话框</span></pre></div><div class="" style="position: relative;"><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. 输入 `sysdm.cpl` 并回车</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">3. 转到"系统保护"选项卡</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">4. 点击"创建"按钮，按提示创建还原点</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 92px;"></div><div class="CodeMirror-gutters" style="display: none; height: 92px;"></div></div></div></pre><h2 id="12-备份注册表"><span>1.2 备份注册表</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. 按 `Win + R`，输入 `regedit` 打开注册表编辑器</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. 点击"文件" → "导出"</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">3. 选择"全部"，保存为备份文件（如 registry_backup.reg）</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><h1 id="二标准卸载流程"><span>二、标准卸载流程</span></h1><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">geek或者其他卸载软件卸载应用本体</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 23px;"></div><div class="CodeMirror-gutters" style="display: none; height: 23px;"></div></div></div></pre><h1 id="三手动删除残留文件"><span>三、手动删除残留文件</span></h1><h2 id="31-程序安装目录"><span>3.1 程序安装目录</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">检查并删除以下目录中的相关文件夹：</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. `C:\Program Files\`</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. `C:\Program Files (x86)\`</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">3. `C:\ProgramData\`（隐藏文件夹，需开启显示）</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">4. `C:\Users\Public\`</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 115px;"></div><div class="CodeMirror-gutters" style="display: none; height: 115px;"></div></div></div></pre><h2 id="32-临时文件"><span>3.2 临时文件</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">清理临时文件：</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. `%TEMP%` 或 `C:\Windows\Temp`</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. `C:\Users\[用户名]\AppData\Local\Temp`</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><h1 id="四清理注册表残留"><span>四、清理注册表残留</span></h1><h2 id="41-打开注册表编辑器"><span>4.1 打开注册表编辑器</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. 按 `Win + R`，输入 `regedit`</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. 按 `Ctrl + F` 打开搜索框</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 46px;"></div><div class="CodeMirror-gutters" style="display: none; height: 46px;"></div></div></div></pre><h2 id="42-搜索并删除相关项按f3继续搜索）"><span>4.2 搜索并删除相关项（按F3继续搜索）</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false" style="break-inside: unset;"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">需要搜索的关键位置：</span></pre></div><div class="" style="position: relative;"><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. **应用设置和配置**：</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_CURRENT_USER\Software\[开发商名或应用名]</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_LOCAL_MACHINE\SOFTWARE\[开发商名或应用名]</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. **64位系统额外检查**：</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\[开发商名或应用名]</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">3. **启动项**：</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">4. **文件关联**：</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_CLASSES_ROOT\Applications\[应用名].exe</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_CLASSES_ROOT\[应用相关扩展名]</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">5. **卸载信息**：</span></pre><div class="" style="position: relative;"><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   - HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 668px;"></div><div class="CodeMirror-gutters" style="display: none; height: 668px;"></div></div></div></pre><h1 id="五-环境变量"><span>五、 环境变量</span></h1><pre class="md-fences md-end-block ty-contain-cm" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">1. 此电脑右键属性 → 高级系统 设置 → 环境变量</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">2. 检查PATH变量中是否有应用路径</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">3. 用户变量中是否有应用相关变量</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre></div>
+            </div>
+
+            <div class="article-actions">
+                <a href="index.html" class="article-btn">
+                    <i class="fas fa-home"></i>
+                    <span>返回首页</span>
+                </a>
+                <a href="#top" class="article-btn">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>回到顶部</span>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- 引入鼠标特效JS -->
+    <script src="js/app.js"></script>
+</body>
+</html>
