@@ -8,6 +8,98 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
     <link rel="icon" href="https://raw.githubusercontent.com/Jrafina/picbed/main/favicon.ico" type="image/x-icon">
+    <style>
+        /* 新增：关键词标签样式 */
+        .article-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .keyword-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 15px;
+            color: #94a3b8;
+            font-size: 0.8em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .keyword-tag:hover {
+            background: rgba(99, 102, 241, 0.3);
+            color: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+        
+        .keyword-tag.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .keywords-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .keywords-header {
+            width: 100%;
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .keywords-header i {
+            color: #6366f1;
+        }
+        
+        .clear-keywords {
+            margin-left: auto;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-keywords:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f1f5f9;
+            border-color: #ef4444;
+        }
+        
+        .no-keyword-results {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 1.1em;
+            display: none;
+        }
+        
+        .no-keyword-results i {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #6366f1;
+        }
+    </style>
 </head>
 <body>
     <!-- 动态背景效果 -->
@@ -37,42 +129,35 @@
                     <input type="text" class="tips-search-input" placeholder="搜索tips..." id="tipsSearchInput">
                 </div>
                 <ul class="tips-list" id="tipsList">
-                    <li class="tip-item" data-tip-category="css">
-                        <span class="tip-text">实例text</span>
-                        <span class="tip-tag">实例tag</span>
-                    </li>
-
-	    <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="命令行 网络 DNS">
                         <span class="tip-text">清理DNS污染指令：  ipconfig /flushdns</span>
                         <span class="tip-tag">命令行指令</span>
                     </li>
 
-                    <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="Python pip 镜像 清华源">
                         <span class="tip-text">配置清华源：  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</span>
                         <span class="tip-tag">pip指令</span>
                     </li>
 
-	    <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="Windows 注册表 右键 清理">
                         <span class="tip-text">删除右键注册表：  计算机\HKEY_CLASSES_ROOT\Directory\Background\shell\</span>
                         <span class="tip-tag">注册表清理</span>
                     </li>
 
-                     <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="键盘 失能 命令行 Windows">
                         <span class="tip-text">（键盘失能）管理员身份打开命令行： sc config i8042prt start= disabled</span>
                         <span class="tip-tag">键盘失能</span>
                     </li>
 
-                     <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="键盘 使能 命令行 Windows">
                         <span class="tip-text">（键盘使能）管理员身份打开命令行： sc config i8042prt start= demand  或者  auto</span>
                         <span class="tip-tag">键盘使能</span>
                     </li>
 
-                     <li class="tip-item" data-tip-category="css">
+                    <li class="tip-item" data-tip-category="css" data-keywords="Python 虚拟环境 命令行">
                         <span class="tip-text">进入python虚拟环境的指令：.venv\Scripts\activate</span>
                         <span class="tip-tag">Python</span>
                     </li>
-
-
                 </ul>
             </div>
         </aside>
@@ -95,7 +180,8 @@
                                 <span class="category-link" data-category="tutorials">教程归纳</span>
                             </li>
                             <li class="category-item">
-                                <span class="category-link" data-category="solutions">问题解决</span>
+                                <!-- 修改：将"问题解决"改为"学习合集" -->
+                                <span class="category-link" data-category="learning">学习合集</span>
                             </li>
                         </ul>
                     </div>
@@ -103,34 +189,84 @@
                 <p>欢迎访问我的博客文章列表</p>
             </header>
 
+            <!-- 新增：关键词筛选区域 -->
+            <div class="keywords-filter" id="keywordsFilter" style="display: none;">
+                <div class="keywords-header">
+                    <i class="fas fa-filter"></i>
+                    <span>当前筛选：</span>
+                    <button class="clear-keywords" id="clearKeywords">
+                        <i class="fas fa-times"></i> 清除筛选
+                    </button>
+                </div>
+                <!-- 关键词标签将通过JS动态添加 -->
+            </div>
+
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="搜索文章标题..." id="searchInput">
             </div>
 
-            <ul class="article-list" id="articleList">
+            <!-- 新增：无关键词结果提示 -->
+            <div class="no-keyword-results" id="noKeywordResults">
+                <i class="fas fa-search"></i>
+                <p>未找到匹配关键词的文章</p>
+                <p style="font-size: 0.9em; margin-top: 10px;">尝试清除筛选或选择其他关键词</p>
+            </div>
 
-                <li class="article-item" data-category="tutorials">
+            <ul class="article-list" id="articleList">
+                <li class="article-item" data-category="tutorials" data-keywords="网盘 资源 下载 软件">
                     <a href="网盘资源.html" class="article-link" target="_blank">网盘资源</a>
                     <span class="article-tag">教程归纳</span>
                     <div class="article-meta">上传时间：2025-12-1</div>
                     <p class="article-desc">个人网盘资源汇总。</p>
+                    <div class="article-keywords">
+                        <span class="keyword-tag">网盘</span>
+                        <span class="keyword-tag">资源</span>
+                        <span class="keyword-tag">软件</span>
+                        <span class="keyword-tag">下载</span>
+                    </div>
                 </li>
 
-                <li class="article-item" data-category="tutorials">
+                <li class="article-item" data-category="tutorials" data-keywords="Markdown 语法 教程 写作">
                     <a href="markdown语法学习.html" class="article-link" target="_blank">markdown语法学习</a>
                     <span class="article-tag">教程归纳</span>
                     <div class="article-meta">上传时间：2025-12-5</div>
                     <p class="article-desc">简易版Markdown的语法总结</p>
+                    <div class="article-keywords">
+                        <span class="keyword-tag">Markdown</span>
+                        <span class="keyword-tag">语法</span>
+                        <span class="keyword-tag">教程</span>
+                        <span class="keyword-tag">写作</span>
+                    </div>
                 </li>
 
-                 <li class="article-item" data-category="tutorials">
+                <li class="article-item" data-category="tutorials" data-keywords="Windows 卸载 教程 系统 清理">
                     <a href="Windows 应用完全手动卸载指南.html" class="article-link" target="_blank">Windows 应用完全手动卸载指南</a>
                     <span class="article-tag">教程归纳</span>
                     <div class="article-meta">上传时间：2025-12-7</div>
                     <p class="article-desc">教你如何卸载windows电脑上面的残留文件</p>
+                    <div class="article-keywords">
+                        <span class="keyword-tag">Windows</span>
+                        <span class="keyword-tag">卸载</span>
+                        <span class="keyword-tag">教程</span>
+                        <span class="keyword-tag">系统清理</span>
+                    </div>
                 </li>
-
+                
+                <!-- 示例：学习合集文章 -->
+                <li class="article-item" data-category="learning" data-keywords="Git 版本控制 开发 工具">
+                    <a href="javascript:void(0)" class="article-link">Git入门到精通</a>
+                    <span class="article-tag">学习合集</span>
+                    <div class="article-meta">上传时间：2025-12-10</div>
+                    <p class="article-desc">Git版本控制系统全面学习指南</p>
+                    <div class="article-keywords">
+                        <span class="keyword-tag">Git</span>
+                        <span class="keyword-tag">版本控制</span>
+                        <span class="keyword-tag">开发工具</span>
+                        <span class="keyword-tag">编程</span>
+                    </div>
+                </li>
             </ul>
+            
             <!-- 评论区移到主内容区内 -->
             <div id="waline"></div>
         </main>
@@ -183,7 +319,6 @@
                     <span class="song-name">勇气</span>
                     <span class="song-info">- 棉子</span>
                 </li>
-
             </ul>
 
             <!-- 控制按钮 -->
@@ -212,8 +347,7 @@
         init({
             el: '#waline',
             serverURL: 'https://comment2.1795857.xyz',
-            dark: 'body', // 启用深色模式检测
-            // 自定义 Waline 主题变量
+            dark: 'body',
             meta: ['nick', 'mail', 'link'],
             requiredMeta: ['nick'],
             lang: 'zh-CN',
@@ -227,5 +361,227 @@
 
     <script src="js/app.js"></script>
     <script src="js/music-player.js"></script>
+    <script>
+        // 新增：关键词筛选功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取相关元素
+            const articleItems = document.querySelectorAll('.article-item');
+            const keywordTags = document.querySelectorAll('.keyword-tag');
+            const keywordsFilter = document.getElementById('keywordsFilter');
+            const clearKeywordsBtn = document.getElementById('clearKeywords');
+            const noKeywordResults = document.getElementById('noKeywordResults');
+            const articleList = document.getElementById('articleList');
+            const categoryLinks = document.querySelectorAll('.category-link');
+            const backAllBtn = document.getElementById('backAllBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            // 当前激活的关键词
+            let activeKeywords = new Set();
+            
+            // 为每个关键词标签添加点击事件
+            keywordTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const keyword = this.textContent;
+                    
+                    // 切换关键词的激活状态
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        activeKeywords.delete(keyword);
+                    } else {
+                        this.classList.add('active');
+                        activeKeywords.add(keyword);
+                    }
+                    
+                    // 更新关键词筛选区域的显示
+                    updateKeywordsFilter();
+                    
+                    // 执行筛选
+                    filterArticles();
+                });
+            });
+            
+            // 清除所有关键词筛选
+            clearKeywordsBtn.addEventListener('click', function() {
+                // 清除所有激活的关键词
+                keywordTags.forEach(tag => {
+                    tag.classList.remove('active');
+                });
+                activeKeywords.clear();
+                
+                // 隐藏关键词筛选区域
+                keywordsFilter.style.display = 'none';
+                
+                // 执行筛选
+                filterArticles();
+            });
+            
+            // 更新关键词筛选区域
+            function updateKeywordsFilter() {
+                const filterTags = keywordsFilter.querySelector('.filter-tags');
+                
+                // 移除现有的筛选标签
+                if (filterTags) {
+                    filterTags.remove();
+                }
+                
+                if (activeKeywords.size > 0) {
+                    // 显示筛选区域
+                    keywordsFilter.style.display = 'block';
+                    
+                    // 创建新的筛选标签容器
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.className = 'filter-tags';
+                    tagsContainer.style.display = 'flex';
+                    tagsContainer.style.flexWrap = 'wrap';
+                    tagsContainer.style.gap = '8px';
+                    
+                    // 添加当前激活的关键词标签
+                    activeKeywords.forEach(keyword => {
+                        const tag = document.createElement('span');
+                        tag.className = 'keyword-tag active';
+                        tag.textContent = keyword;
+                        tag.style.cursor = 'pointer';
+                        
+                        // 点击筛选标签可以移除该关键词
+                        tag.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            
+                            // 移除该关键词
+                            activeKeywords.delete(keyword);
+                            
+                            // 找到对应的文章关键词标签并取消激活
+                            keywordTags.forEach(articleTag => {
+                                if (articleTag.textContent === keyword) {
+                                    articleTag.classList.remove('active');
+                                }
+                            });
+                            
+                            // 更新筛选区域
+                            updateKeywordsFilter();
+                            
+                            // 执行筛选
+                            filterArticles();
+                        });
+                        
+                        tagsContainer.appendChild(tag);
+                    });
+                    
+                    keywordsFilter.appendChild(tagsContainer);
+                } else {
+                    // 隐藏筛选区域
+                    keywordsFilter.style.display = 'none';
+                }
+            }
+            
+            // 文章筛选函数（整合关键词筛选）
+            function filterArticles() {
+                const activeCategory = document.querySelector('.category-link.active').getAttribute('data-category');
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                articleItems.forEach((article, index) => {
+                    const articleCategory = article.getAttribute('data-category');
+                    const articleTitle = article.querySelector('.article-link').textContent.toLowerCase();
+                    const articleDesc = article.querySelector('.article-desc').textContent.toLowerCase();
+                    const articleKeywords = article.getAttribute('data-keywords').toLowerCase();
+                    
+                    // 检查分类匹配
+                    const isCategoryMatch = activeCategory === 'all' || articleCategory === activeCategory;
+                    
+                    // 检查搜索词匹配
+                    const isSearchMatch = searchTerm === '' || 
+                                          articleTitle.includes(searchTerm) || 
+                                          articleDesc.includes(searchTerm) ||
+                                          articleKeywords.includes(searchTerm);
+                    
+                    // 检查关键词匹配
+                    let isKeywordMatch = true;
+                    if (activeKeywords.size > 0) {
+                        isKeywordMatch = false;
+                        const articleKeywordsArray = articleKeywords.split(' ');
+                        
+                        // 检查文章是否包含所有激活的关键词
+                        for (const keyword of activeKeywords) {
+                            if (articleKeywordsArray.includes(keyword.toLowerCase())) {
+                                isKeywordMatch = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 综合判断是否显示文章
+                    if (isCategoryMatch && isSearchMatch && isKeywordMatch) {
+                        article.style.display = '';
+                        visibleCount++;
+                        
+                        // 添加显示动画
+                        setTimeout(() => {
+                            article.style.opacity = '1';
+                            article.style.transform = 'translateY(0)';
+                        }, index * 50);
+                    } else {
+                        article.style.opacity = '0';
+                        article.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            article.style.display = 'none';
+                        }, 300);
+                    }
+                });
+                
+                // 显示/隐藏无结果提示
+                if (visibleCount === 0) {
+                    noKeywordResults.style.display = 'block';
+                    articleList.style.display = 'none';
+                } else {
+                    noKeywordResults.style.display = 'none';
+                    articleList.style.display = 'block';
+                }
+                
+                // 更新返回全部按钮的显示
+                if (activeCategory === 'all') {
+                    backAllBtn.style.display = 'none';
+                } else {
+                    backAllBtn.style.display = 'inline-flex';
+                }
+            }
+            
+            // 监听搜索输入
+            searchInput.addEventListener('input', filterArticles);
+            
+            // 监听分类切换
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    categoryLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新标题
+                    const category = this.getAttribute('data-category');
+                    const categoryTitle = document.querySelector('.category-title');
+                    
+                    if (category === 'all') {
+                        categoryTitle.textContent = 'Jrafina的博客小站';
+                    } else if (category === 'tutorials') {
+                        categoryTitle.textContent = '教程归纳';
+                    } else if (category === 'learning') {
+                        categoryTitle.textContent = '学习合集';
+                    }
+                    
+                    // 执行筛选
+                    filterArticles();
+                });
+            });
+            
+            // 返回全部文章
+            backAllBtn.addEventListener('click', function() {
+                categoryLinks.forEach(link => link.classList.remove('active'));
+                document.querySelector('[data-category="all"]').classList.add('active');
+                document.querySelector('.category-title').textContent = 'Jrafina的博客小站';
+                filterArticles();
+            });
+            
+            // 初始化筛选
+            filterArticles();
+        });
+    </script>
 </body>
 </html>

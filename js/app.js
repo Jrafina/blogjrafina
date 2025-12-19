@@ -47,8 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (category === 'tutorials') {
                 categoryTitle.textContent = '教程归纳';
                 backAllBtn.style.display = 'inline-flex';
-            } else if (category === 'solutions') {
-                categoryTitle.textContent = '问题解决';
+            } else if (category === 'learning') {
+                // 修改：更新分类名称为"学习合集"
+                categoryTitle.textContent = '学习合集';
                 backAllBtn.style.display = 'inline-flex';
             }
 
@@ -135,12 +136,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Tips筛选函数
+    // Tips筛选函数（支持关键词搜索）
     function filterTips(searchTerm = '') {
         allTips.forEach((tip, index) => {
             const tipText = tip.querySelector('.tip-text').textContent.toLowerCase();
             const tipCategory = tip.getAttribute('data-tip-category').toLowerCase();
-            const isMatch = tipText.includes(searchTerm) || (searchTerm && tipCategory.includes(searchTerm));
+            const tipKeywords = tip.getAttribute('data-keywords') || '';
+            const keywords = tipKeywords.toLowerCase();
+            
+            // 检查是否匹配文本、类别或关键词
+            const isMatch = tipText.includes(searchTerm) || 
+                           (searchTerm && tipCategory.includes(searchTerm)) ||
+                           (searchTerm && keywords.includes(searchTerm));
 
             if (isMatch) {
                 tip.style.display = '';
@@ -167,6 +174,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化所有鼠标特效
     initMouseEffects();
 });
+
+// ...（后面的鼠标特效代码保持不变）...
+    // 初始化所有鼠标特效
+    initMouseEffects();
+
 
 // 鼠标特效系统
 function initMouseEffects() {

@@ -9,7 +9,7 @@
     <style>
         /* 文章页面特定样式 */
         .article-main-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 40px auto;
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -112,7 +112,7 @@
             font-weight: 600;
         }
 
-        /* 文章内容样式 - 保持原有结构，仅调整颜色和间距 */
+        /* 文章内容样式 */
         .article-body {
             line-height: 1.8;
             color: #e2e8f0;
@@ -184,6 +184,7 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             overflow: hidden;
+            table-layout: fixed;
         }
 
         .article-body table th {
@@ -199,6 +200,7 @@
             padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: #e2e8f0;
+            vertical-align: top;
         }
 
         .article-body table tr:hover {
@@ -236,7 +238,7 @@
             margin: 10px 0;
         }
 
-        /* 代码块样式 - 完全保留原始结构 */
+        /* 代码块样式 */
         .md-fences {
             background: #1e293b;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -331,12 +333,19 @@
 
             .article-content-wrapper {
                 order: 1;
+                padding: 30px;
+            }
+            
+            .article-body table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
 
         @media (max-width: 768px) {
             .article-content-wrapper {
-                padding: 30px 20px;
+                padding: 20px;
             }
 
             .article-title {
@@ -367,6 +376,15 @@
                 max-width: 300px;
                 justify-content: center;
             }
+            
+            .article-body table {
+                font-size: 0.9em;
+            }
+            
+            .article-body table th,
+            .article-body table td {
+                padding: 10px 8px;
+            }
         }
 
         /* 新增：网盘资源搜索栏样式 */
@@ -381,14 +399,14 @@
         .pan-search-input {
             width: 100%;
             padding: 16px 20px;
-            padding-right: 80px; /* 为图标预留空间 */
+            padding-right: 80px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50px;
             color: #f1f5f9;
             font-size: 1em;
             transition: all 0.3s ease;
-            cursor: text !important; /* 修复问题1：显示文本光标 */
+            cursor: text !important;
         }
 
         .pan-search-input:focus {
@@ -401,7 +419,7 @@
             color: #94a3b8;
         }
 
-        /* 搜索图标容器 - 修复问题2：重构图标容器 */
+        /* 搜索图标容器 */
         .pan-search-icons {
             position: absolute;
             right: 20px;
@@ -425,7 +443,7 @@
             height: 20px;
         }
 
-        /* 清除按钮 - 修复问题2：使用绝对定位确保位置 */
+        /* 清除按钮 */
         .pan-search-clear {
             color: #94a3b8;
             cursor: pointer;
@@ -443,7 +461,7 @@
             padding: 0;
             position: absolute;
             right: 20px;
-            top: 80%;
+            top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
         }
@@ -478,6 +496,159 @@
             color: #94a3b8;
             font-size: 0.9em;
             display: none;
+        }
+
+        /* 表格列宽调整 */
+        .article-body table th:nth-child(1),
+        .article-body table td:nth-child(1) {
+            width: 30%;
+            min-width: 150px;
+        }
+
+        .article-body table th:nth-child(2),
+        .article-body table td:nth-child(2) {
+            width: 15%;
+            min-width: 80px;
+        }
+
+        .article-body table th:nth-child(3),
+        .article-body table td:nth-child(3) {
+            width: 15%;
+            min-width: 80px;
+        }
+
+        .article-body table th:nth-child(4),
+        .article-body table td:nth-child(4) {
+            width: 40%;
+            min-width: 200px;
+        }
+
+        /* 备注样式优化 */
+        .remark-cell {
+            position: relative;
+        }
+
+        .remark-content {
+            max-height: 60px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 0.3s ease;
+            line-height: 1.5;
+            padding-right: 25px;
+        }
+
+        .remark-content.expanded {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .remark-content.collapsed:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(30, 41, 59, 0.9));
+        }
+
+        .remark-toggle {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+            color: #94a3b8;
+            font-size: 0.8em;
+            padding: 2px 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .remark-toggle:hover {
+            background: rgba(99, 102, 241, 0.4);
+            color: #f1f5f9;
+        }
+
+        .remark-toggle i {
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+        }
+
+        .remark-content.expanded + .remark-toggle i {
+            transform: rotate(180deg);
+        }
+
+        /* 高亮显示样式 */
+        .search-highlight {
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            color: #000;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            animation: highlightPulse 2s infinite;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% {
+                background: linear-gradient(135deg, #ffd700, #ffb347);
+            }
+            50% {
+                background: linear-gradient(135deg, #ffb347, #ffd700);
+            }
+        }
+
+        /* 滚动条样式 */
+        .remark-content.expanded::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .remark-content.expanded::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .remark-content.expanded::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 3px;
+        }
+
+        .remark-content.expanded::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        /* 移动端备注样式 */
+        @media (max-width: 768px) {
+            .remark-content {
+                max-height: 45px;
+                font-size: 0.9em;
+                padding-right: 30px;
+            }
+            
+            .remark-toggle {
+                right: 2px;
+                top: 2px;
+                padding: 1px 4px;
+                font-size: 0.7em;
+            }
+            
+            .article-body table th:nth-child(1),
+            .article-body table td:nth-child(1) {
+                min-width: 120px;
+            }
+            
+            .article-body table th:nth-child(4),
+            .article-body table td:nth-child(4) {
+                min-width: 150px;
+            }
+            
+            .search-highlight {
+                padding: 0 2px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -518,14 +689,12 @@
 
             <!-- 新增：网盘资源搜索栏 -->
             <div class="pan-search-container">
-                <input type="text" class="pan-search-input" placeholder="搜索资源名称或网盘..." id="panSearchInput">
-                <!-- 修改：简化图标容器 -->
+                <input type="text" class="pan-search-input" placeholder="搜索资源名称、网盘或备注..." id="panSearchInput">
                 <div class="pan-search-icons">
                     <div class="pan-search-icon">
                         <i class="fas fa-search"></i>
                     </div>
                 </div>
-                <!-- 修改：清除按钮单独定位 -->
                 <button class="pan-search-clear" id="panSearchClear" title="清除搜索">
                     <i class="fas fa-times"></i>
                 </button>
@@ -546,56 +715,168 @@
                         <table id="panResourcesTable">
                             <thead>
                                 <tr>
-                                    <th style="text-align:center;"><span>文件名</span></th>
-                                    <th style="text-align:center;"><span>网盘名称</span></th>
-                                    <th style="text-align:center;"><span>提取码</span></th>
+                                    <th><span>文件名</span></th>
+                                    <th><span>网盘名称</span></th>
+                                    <th><span>提取码</span></th>
+                                    <th><span>备注</span></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://www.123865.com/s/Vl6Xvd-qsALh"><span>AutoCAD2020.zip</span></a></td>
-                                    <td style="text-align:center;"><span>123云盘</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://www.123865.com/s/Vl6Xvd-qsALh"><span class="file-name-text">AutoCAD2020.zip</span></a></td>
+                                    <td><span class="pan-name-text">123云盘</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">AutoCAD 2020 完整版，包含所有功能模块和激活工具。安装前请确保系统满足最低要求：Windows 10 64位，8GB内存，6GB磁盘空间。</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://www.123865.com/s/Vl6Xvd-6sALh"><span>Ansys.Products.19.0.Win64-SSQ.zip</span></a></td>
-                                    <td style="text-align:center;"><span>123云盘</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://www.123865.com/s/Vl6Xvd-6sALh"><span class="file-name-text">Ansys.Products.19.0.Win64-SSQ.zip</span></a></td>
+                                    <td><span class="pan-name-text">123云盘</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Ansys Products 19.0 Win64 全套有限元分析软件。包含：<br>
+                                            • Ansys Mechanical - 结构分析<br>
+                                            • Ansys Fluent - 流体分析<br>
+                                            • Ansys Electromagnetics - 电磁分析<br>
+                                            • 以及其他相关模块</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://www.123865.com/s/Vl6Xvd-ysALh"><span>Photoshop 2024 25.7.zip</span></a></td>
-                                    <td style="text-align:center;"><span>123云盘</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://www.123865.com/s/Vl6Xvd-ysALh"><span class="file-name-text">Photoshop 2024 25.7.zip</span></a></td>
+                                    <td><span class="pan-name-text">123云盘</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Photoshop 2024 版本 25.7，包含最新的AI功能：<br>
+                                            • 神经滤镜 (Neural Filters)<br>
+                                            • 内容感知填充增强版<br>
+                                            • 一键换天空功能<br>
+                                            • 更好的性能优化<br>
+                                            支持Windows 10/11系统</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/izkIF3cfnlkf"><span>安卓手机使用moonlight-game-streaming-12-1.apk</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>ahep</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/izkIF3cfnlkf"><span class="file-name-text">安卓手机使用moonlight-game-streaming-12-1.apk</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>ahep</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">安卓版Moonlight游戏串流客户端版本12.1。特点：<br>
+                                            • 支持4K 120Hz串流<br>
+                                            • 低延迟游戏体验<br>
+                                            • 支持手柄映射<br>
+                                            • 需要配合PC端的Sunshine或NVIDIA GameStream使用</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/id8sa3cfnkwb"><span>笔记本虚拟显示器ParsecVDisplay-v0.45-setup.exe</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>8atc</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/id8sa3cfnkwb"><span class="file-name-text">笔记本虚拟显示器ParsecVDisplay-v0.45-setup.exe</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>8atc</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Parsec虚拟显示器工具v0.45。功能：<br>
+                                            • 为笔记本创建虚拟显示器<br>
+                                            • 扩展工作区域<br>
+                                            • 支持高分辨率<br>
+                                            • 无需额外硬件<br>
+                                            适用于需要多屏工作但硬件有限的用户</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/isHbO3cfnkpe"><span>sunshine-windows-installer.exe</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>53qe</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/isHbO3cfnkpe"><span class="file-name-text">sunshine-windows-installer.exe</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>53qe</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Sunshine Windows安装程序，开源的游戏串流服务端。特性：<br>
+                                            • 开源免费<br>
+                                            • 支持AMD/NVIDIA/Intel显卡<br>
+                                            • 低延迟编码<br>
+                                            • 与Moonlight客户端完美兼容<br>
+                                            • 支持多用户同时连接</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/ig3p438uwu0j"><span>Typora1.3.6.zip</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/ig3p438uwu0j"><span class="file-name-text">Typora1.3.6.zip</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Typora 1.3.6版本，最后一个免费版本。特色功能：<br>
+                                            • 实时预览Markdown<br>
+                                            • 简洁的用户界面<br>
+                                            • 支持数学公式<br>
+                                            • 支持流程图和时序图<br>
+                                            • 导出为PDF/HTML/Word等格式</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/iokef38uwnah"><span>Git-2.39.2-64-bit.zip</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/iokef38uwnah"><span class="file-name-text">Git-2.39.2-64-bit.zip</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Git版本控制系统2.39.2 64位Windows安装包。包含：<br>
+                                            • Git Bash命令行工具<br>
+                                            • Git GUI图形界面<br>
+                                            • Git LFS大文件支持<br>
+                                            • 完整的文档和帮助文件<br>
+                                            这是目前最稳定的Git for Windows版本之一</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr class="resource-item">
-                                    <td style="text-align:center;"><a href="https://wwavq.lanzouu.com/i1MNi38ynl4j"><span>markdown语法学习.zip</span></a></td>
-                                    <td style="text-align:center;"><span>蓝奏云</span></td>
-                                    <td style="text-align:center;"><span>无</span></td>
+                                    <td><a href="https://wwavq.lanzouu.com/i1MNi38ynl4j"><span class="file-name-text">markdown语法学习.zip</span></a></td>
+                                    <td><span class="pan-name-text">蓝奏云</span></td>
+                                    <td><span>无</span></td>
+                                    <td class="remark-cell">
+                                        <div class="remark-content collapsed">
+                                            <span class="remark-text">Markdown语法学习资料包。内容包含：<br>
+                                            • Markdown基础语法教程<br>
+                                            • 进阶技巧和最佳实践<br>
+                                            • 实用示例和模板<br>
+                                            • 扩展语法指南(GFM)<br>
+                                            • 常见工具配置指南<br>
+                                            适合初学者和需要系统学习Markdown的用户</span>
+                                        </div>
+                                        <button class="remark-toggle" title="展开/收起备注">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -644,10 +925,88 @@
                 }, index * 100);
             });
 
+            // 备注展开/收起功能
+            function initRemarkToggle() {
+                const remarkToggles = document.querySelectorAll('.remark-toggle');
+                remarkToggles.forEach(toggle => {
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const content = this.previousElementSibling;
+                        const isExpanded = content.classList.contains('expanded');
+                        
+                        if (isExpanded) {
+                            content.classList.remove('expanded');
+                            content.classList.add('collapsed');
+                        } else {
+                            content.classList.remove('collapsed');
+                            content.classList.add('expanded');
+                        }
+                    });
+                });
+            }
+
+            // 清除所有高亮
+            function clearHighlights() {
+                const highlights = document.querySelectorAll('.search-highlight');
+                highlights.forEach(highlight => {
+                    const parent = highlight.parentNode;
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                });
+                
+                // 恢复原始文本
+                document.querySelectorAll('.file-name-text, .pan-name-text, .remark-text').forEach(el => {
+                    if (el.innerHTML.includes('<span class="search-highlight">')) {
+                        el.innerHTML = el.innerHTML.replace(/<span class="search-highlight">/g, '').replace(/<\/span>/g, '');
+                    }
+                });
+            }
+
+            // 高亮文本函数
+            function highlightText(element, searchTerm) {
+                if (!searchTerm || !element) return;
+                
+                const text = element.textContent;
+                const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+                
+                if (regex.test(text)) {
+                    const highlighted = text.replace(regex, '<span class="search-highlight">$1</span>');
+                    
+                    // 处理备注中的HTML标签（如<br>）
+                    if (element.classList.contains('remark-text')) {
+                        // 保存原有的HTML结构
+                        let html = element.innerHTML;
+                        
+                        // 临时替换<br>标签为特殊标记
+                        html = html.replace(/<br\s*\/?>/gi, '###BR###');
+                        
+                        // 进行高亮替换
+                        html = html.replace(regex, '<span class="search-highlight">$1</span>');
+                        
+                        // 恢复<br>标签
+                        html = html.replace(/###BR###/g, '<br>');
+                        
+                        element.innerHTML = html;
+                    } else {
+                        element.innerHTML = highlighted;
+                    }
+                }
+            }
+
+            // 转义正则表达式特殊字符
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
             // 搜索功能
             function performSearch() {
                 const searchTerm = searchInput.value.trim().toLowerCase();
                 let visibleCount = 0;
+
+                // 清除之前的高亮
+                clearHighlights();
 
                 // 更新清除按钮和搜索图标状态
                 if (searchTerm === '') {
@@ -678,19 +1037,37 @@
 
                 // 搜索过滤
                 resourceItems.forEach((item, index) => {
-                    const fileName = item.querySelector('td:nth-child(1) span').textContent.toLowerCase();
-                    const panName = item.querySelector('td:nth-child(2) span').textContent.toLowerCase();
+                    const fileNameEl = item.querySelector('.file-name-text');
+                    const panNameEl = item.querySelector('.pan-name-text');
+                    const remarkEl = item.querySelector('.remark-text');
+                    
+                    const fileName = fileNameEl.textContent.toLowerCase();
+                    const panName = panNameEl.textContent.toLowerCase();
+                    const remarkText = remarkEl.textContent.toLowerCase();
 
-                    // 检查文件名或网盘名称是否包含搜索词
-                    if (fileName.includes(searchTerm) || panName.includes(searchTerm)) {
+                    // 检查文件名、网盘名称或备注是否包含搜索词
+                    if (fileName.includes(searchTerm) || panName.includes(searchTerm) || remarkText.includes(searchTerm)) {
                         item.style.display = '';
                         visibleCount++;
+                        
+                        // 添加高亮效果
+                        highlightText(fileNameEl, searchTerm);
+                        highlightText(panNameEl, searchTerm);
+                        highlightText(remarkEl, searchTerm);
+                        
+                        // 搜索时自动展开匹配的备注
+                        const remarkContent = item.querySelector('.remark-content');
+                        if (remarkText.includes(searchTerm)) {
+                            remarkContent.classList.remove('collapsed');
+                            remarkContent.classList.add('expanded');
+                        }
+
                         setTimeout(() => {
                             item.style.opacity = '1';
                             item.style.transform = 'translateY(0)';
                         }, index * 50);
 
-                        // 添加高亮效果
+                        // 添加行高亮效果
                         item.style.background = 'rgba(99, 102, 241, 0.15)';
                         item.style.boxShadow = '0 0 15px rgba(99, 102, 241, 0.2)';
                     } else {
@@ -719,7 +1096,11 @@
             }
 
             // 监听输入事件
-            searchInput.addEventListener('input', performSearch);
+            searchInput.addEventListener('input', function() {
+                // 添加防抖，避免频繁搜索
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(performSearch, 300);
+            });
 
             // 清除搜索功能
             searchClear.addEventListener('click', function() {
@@ -731,21 +1112,15 @@
             // 添加搜索示例提示
             searchInput.addEventListener('focus', function() {
                 if (!this.hasAttribute('data-example-shown')) {
-                    this.setAttribute('placeholder', '例如：Photoshop、蓝奏云、AutoCAD...');
+                    this.setAttribute('placeholder', '例如：Photoshop、蓝奏云、AutoCAD、串流...');
                     this.setAttribute('data-example-shown', 'true');
                 }
             });
 
             searchInput.addEventListener('blur', function() {
                 if (this.value === '') {
-                    this.setAttribute('placeholder', '搜索资源名称或网盘...');
+                    this.setAttribute('placeholder', '搜索资源名称、网盘或备注...');
                 }
-            });
-
-            // 修复问题1：在搜索输入框显示文本光标
-            searchInput.addEventListener('mouseenter', function() {
-                // 确保输入框显示正确的光标
-                this.style.cursor = 'text';
             });
 
             // 添加键盘快捷键
@@ -791,6 +1166,12 @@
             searchInput.addEventListener('input', function() {
                 setTimeout(updateClearButtonPosition, 10);
             });
+
+            // 初始化备注展开功能
+            initRemarkToggle();
+
+            // 初始执行搜索
+            performSearch();
         });
     </script>
 </body>
