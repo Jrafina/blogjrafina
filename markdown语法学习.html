@@ -1,449 +1,1250 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!doctype html>
+<html style='font-size:18px !important'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>markdown语法学习 - Jrafina的博客小站</title>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* 文章页面特定样式 */
-        .article-main-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-        }
-        
-        /* 文章导航侧边栏 */
-        .article-sidebar {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            height: fit-content;
-            position: sticky;
-            top: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .article-sidebar h3 {
-            font-size: 1.4em;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .article-toc {
-            list-style: none;
-        }
-        
-        .article-toc li {
-            margin-bottom: 12px;
-        }
-        
-        .article-toc a {
-            color: #94a3b8;
-            text-decoration: none;
-            display: block;
-            padding: 8px 15px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-            cursor: none;
-        }
-        
-        .article-toc a:hover {
-            color: #f1f5f9;
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .article-toc .toc-h2 {
-            margin-left: 15px;
-            font-size: 0.85em;
-        }
-        
-        /* 文章内容区域 */
-        .article-content-wrapper {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            min-height: 800px;
-        }
-        
-        .article-header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .article-title {
-            font-size: 2.5em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-        
-        .article-meta {
-            color: #94a3b8;
-            font-size: 0.9em;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .article-tag {
-            display: inline-block;
-            padding: 6px 16px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
-        
-        /* 文章内容样式 - 保持原有结构，仅调整颜色和间距 */
-        .article-body {
-            line-height: 1.8;
-            color: #e2e8f0;
-        }
-        
-        /* 标题样式 */
-        .article-body h1,
-        .article-body h2,
-        .article-body h3,
-        .article-body h4,
-        .article-body h5,
-        .article-body h6 {
-            color: #f1f5f9;
-            margin-top: 2em;
-            margin-bottom: 1em;
-            font-weight: 600;
-        }
-        
-        .article-body h1 {
-            font-size: 2.2em;
-            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
-            padding-bottom: 10px;
-            margin-top: 1.5em;
-        }
-        
-        .article-body h2 {
-            font-size: 1.8em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-        }
-        
-        .article-body h3 {
-            font-size: 1.5em;
-        }
-        
-        /* 段落样式 */
-        .article-body p {
-            margin: 1.2em 0;
-            color: #e2e8f0;
-        }
-        
-        /* 链接样式 */
-        .article-body a {
-            color: #06b6d4;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .article-body a:hover {
-            color: #8b5cf6;
-            text-decoration: underline;
-        }
-        
-        /* 引用块样式 */
-        .article-body blockquote {
-            border-left: 4px solid #6366f1;
-            padding: 15px 20px;
-            margin: 20px 0;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 0 8px 8px 0;
-            color: #cbd5e1;
-        }
-        
-        /* 表格样式 */
-        .article-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .article-body table th {
-            background: rgba(99, 102, 241, 0.2);
-            color: #f1f5f9;
-            font-weight: 600;
-            padding: 15px;
-            text-align: left;
-            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
-        }
-        
-        .article-body table td {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-        }
-        
-        .article-body table tr:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-        
-        /* 图片样式 */
-        .article-body img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            margin: 25px 0;
-            display: block;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* 水平线样式 */
-        .article-body hr {
-            border: none;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #6366f1, transparent);
-            margin: 40px 0;
-        }
-        
-        /* 列表样式 */
-        .article-body ul,
-        .article-body ol {
-            margin: 20px 0;
-            padding-left: 30px;
-            color: #e2e8f0;
-        }
-        
-        .article-body li {
-            margin: 10px 0;
-        }
-        
-        /* 代码块样式 - 完全保留原始结构 */
-        .md-fences {
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            margin: 25px 0;
-            position: relative;
-        }
-        
-        /* 行内代码样式 */
-        .article-body code:not(.md-fences code) {
-            background: rgba(99, 102, 241, 0.1);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            color: #f1f5f9;
-            font-size: 0.9em;
-        }
-        
-        /* 文章操作按钮 */
-        .article-actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .article-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            color: #f1f5f9;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: none;
-        }
-        
-        .article-btn:hover {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            transform: translateY(-2px);
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-            border-color: transparent;
-        }
-        
-        /* 返回按钮 */
-        .back-to-home {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            z-index: 1000;
-        }
-        
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            color: #f1f5f9;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: none;
-        }
-        
-        .back-btn:hover {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-            border-color: transparent;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            .article-main-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                margin: 20px;
-            }
-            
-            .article-sidebar {
-                position: static;
-                order: 2;
-            }
-            
-            .article-content-wrapper {
-                order: 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .article-content-wrapper {
-                padding: 30px 20px;
-            }
-            
-            .article-title {
-                font-size: 2em;
-            }
-            
-            .back-to-home {
-                top: 20px;
-                left: 20px;
-            }
-            
-            .back-btn span {
-                display: none;
-            }
-            
-            .back-btn {
-                padding: 12px;
-                border-radius: 50%;
-            }
-            
-            .article-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .article-btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-        }
-    </style>
+<link rel="icon" href="https://raw.githubusercontent.com/Jrafina/picbed/main/favicon.ico" type="image/x-icon">
+
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 1.2rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background: inherit; }
+.CodeMirror-scroll { overflow: auto hidden; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right: 1px solid rgb(221, 221, 221); background: inherit; white-space: nowrap; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background: inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background: inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; outline: 0px; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: auto hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 10px; z-index: 3; overflow-y: hidden; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; background: 0px 0px !important; border: none !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-radius: 0px; border-width: 0px; background: 0px 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; overflow-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; }
+.CodeMirror-wrap pre { overflow-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right: 30px solid transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; inset: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background: rgba(255, 255, 0, 0.4); }
+span.cm-underlined { text-decoration: underline; }
+span.cm-strikethrough { text-decoration: line-through; }
+.cm-tw-syntaxerror { color: rgb(255, 255, 255); background-color: rgb(153, 0, 0); }
+.cm-tw-deleted { text-decoration: line-through; }
+.cm-tw-header5 { font-weight: 700; }
+.cm-tw-listitem:first-child { padding-left: 10px; }
+.cm-tw-box { border-style: solid; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-color: inherit; border-top-width: 0px !important; }
+.cm-tw-underline { text-decoration: underline; }
+@media print {
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+
+
+
+html {
+  font-size: 30px;
+}
+
+html,
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif;
+  text-align: justify;
+  overflow-x: hidden;
+  color: #d9ebe0;
+  background-color: #9191ad;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+	--h-border-color: rgba(36, 124, 240, 0.74);
+	--h-bg-color: #7c7cbe;
+	--sans-serif-font: "Inter", "Noto Sans SC", sans-serif;
+	--monospace-font: "JetBrains Mono", "Source Code Pro", monospace;
+}
+
+
+content #write {
+  background-color: #5d5d6b;
+  max-width: 70%;
+  margin: 0 auto;
+  padding-bottom: 7.5rem;
+}
+
+content #write p {
+  word-spacing: 0.05rem;
+}
+
+content #write ol li {
+  padding-left: 0.5rem;
+}
+
+content #write > h1:first-child {
+  font-weight: normal;
+}
+
+content #write > h5.md-focus:before {
+  top: 2px;
+}
+
+::-moz-selection {
+  background-color: #bac6e9;
+}
+
+::selection {
+  background-color: #bac6e9;
+}
+
+
+
+
+#write {
+	font-family: var(--sans-serif-font);
+	max-width: 60rem;
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
+
+/*
+yaml header settings
+*/
+#write pre.md-meta-block {
+	font-family: var(--monospace-font);
+	font-size: 1.5rem;
+	text-align: left;
+	padding: 0.6rem;
+	color: rgb(134, 134, 134);
+	background-color: var(--code-bg-color);
+	border-radius: 0.4rem;
+}
+
+/*
+headers settings
+*/
+#write h1 {
+	font-size: 2.5rem;
+	text-align: left;
+	text-shadow: 0.15rem 0.15rem 0.3rem rgb(187, 187, 187);
+}
+#write h2 {
+	font-size: 1.8rem;
+	margin-top: 1.8rem;
+	margin-left: -1.5rem;
+	margin-right: -1.5rem;
+	background-color: var(--h-bg-color);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	border-left: 0.5rem solid var(--h-border-color);
+	border-radius: 0.4rem;
+}
+#write h3 {
+	font-size: 1.6rem;
+	text-decoration: underline double var(--h-border-color) 0.15rem;
+}
+#write h4 {
+	text-decoration: underline dotted var(--h-border-color) 0.2rem;
+}
+
+/* paragraph */
+p {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* ul ol */
+ul,
+ol {
+  padding-left: 1.75rem;
+}
+
+ul:first-child,
+ol:first-child {
+  margin-top: 0;
+}
+
+ul:last-child,
+ol:last-child {
+  margin-bottom: 0;
+}
+
+/* blockquote */
+blockquote {
+  padding: 0.5rem 1rem;
+  border-left: 8px solid #2f845e;
+  background-color: rgba(66, 185, 131, 0.1);
+  border-radius: 4px;
+}
+
+blockquote code {
+  background-color: transparent;
+}
+
+/* horizontal line */
+hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-top: 2px dashed #abb2bf;
+}
+
+/* table */
+table,
+.md-table-fig .md-table {
+  border: 1px solid rgb(79, 155, 161);
+  border-radius: 8px;
+  border-collapse: separate;
+  overflow: hidden;
+}
+
+table th,
+table td,
+.md-table-fig .md-table th,
+.md-table-fig .md-table td {
+  padding: 10px 16px;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+
+table th:first-child,
+table td:first-child,
+.md-table-fig .md-table th:first-child,
+.md-table-fig .md-table td:first-child {
+  border-left: 0;
+}
+
+table thead,
+.md-table-fig .md-table thead {
+  background-color: #7babee;
+  color: #000;
+}
+
+table caption + thead tr:first-child th,
+table caption + thead tr:first-child td,
+table colgroup + thead tr:first-child th,
+table colgroup + thead tr:first-child td,
+table thead + tbody tr:first-child th,
+table thead + tbody tr:first-child td,
+table thead:first-child tr:first-child th,
+table thead:first-child tr:first-child td,
+.md-table-fig .md-table caption + thead tr:first-child th,
+.md-table-fig .md-table caption + thead tr:first-child td,
+.md-table-fig .md-table colgroup + thead tr:first-child th,
+.md-table-fig .md-table colgroup + thead tr:first-child td,
+.md-table-fig .md-table thead + tbody tr:first-child th,
+.md-table-fig .md-table thead + tbody tr:first-child td,
+.md-table-fig .md-table thead:first-child tr:first-child th,
+.md-table-fig .md-table thead:first-child tr:first-child td {
+  border-top: 0;
+}
+
+table tbody + tbody,
+.md-table-fig .md-table tbody + tbody {
+  border-top: 2px solid #ddd;
+}
+
+.md-table-fig .md-table-edit {
+  background-color: #ddd;
+}
+
+.md-table-fig .md-table-edit .btn-default:hover {
+  background-color: #bac6e9;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border: none;
+  padding: 0;
+  background-color: transparent;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .arrow {
+  top: -10px;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .arrow::after {
+  border-bottom-color: #ddd;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .md-reset {
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .md-reset input {
+  color: #282c34 !important;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .md-reset input#md-grid-width, .md-table-fig .md-table-edit .md-table-resize-popover .md-reset input#md-grid-height {
+  text-align: center;
+}
+
+.md-table-fig .md-table-edit .md-table-resize-popover .popover-title {
+  border-top: 1px solid #eee;
+}
+
+/* yaml front matter */
+#write pre.md-meta-block {
+  background: #e7ecf3;
+  color: #486491;
+  border: 0;
+  border-radius: 6px;
+  line-height: 1.3rem;
+  padding: 0.5rem 1.5rem;
+  margin-top: -1rem;
+  margin-bottom: 2rem;
+}
+
+/* table of contents */
+.md-toc {
+  margin-bottom: 1.25rem;
+}
+
+/* task list */
+.md-task-list-item > input::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -4px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #737373;
+  background: #fff;
+  -webkit-transition: background-color 200ms ease-in-out;
+  transition: background-color 200ms ease-in-out;
+}
+
+.md-task-list-item > input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 1px;
+  width: 0.6rem;
+  height: 0.3rem;
+  border: 2px solid #fff;
+  border-top: 0;
+  border-right: 0;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
+}
+
+.md-task-list-item > input:checked::before {
+  background-color: #67c23a;
+  border: none;
+}
+
+.md-task-list-item > input:checked::after {
+  opacity: 1;
+}
+
+.md-task-list-item.task-list-done {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* footnote */
+.footnotes {
+  font-size: 1rem;
+}
+
+/* math,html block common */
+.mathjax-block,
+.md-htmlblock {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+}
+
+.mathjax-block[contenteditable="false"]:active, .mathjax-block[contenteditable="false"]:focus,
+.md-htmlblock[contenteditable="false"]:active,
+.md-htmlblock[contenteditable="false"]:focus {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.mathjax-block:hover .md-rawblock-container,
+.mathjax-block:hover .md-rawblock-tooltip,
+.md-htmlblock:hover .md-rawblock-container,
+.md-htmlblock:hover .md-rawblock-tooltip {
+  background-color: #f5f6f7;
+  -webkit-animation: showRawBlockTooltip 0s linear;
+          animation: showRawBlockTooltip 0s linear;
+}
+
+.mathjax-block:hover .md-rawblock-container,
+.md-htmlblock:hover .md-rawblock-container {
+  border-radius: 6px 0 6px 6px;
+}
+
+.mathjax-block .md-rawblock-control,
+.md-htmlblock .md-rawblock-control {
+  background-color: #f5f6f7;
+}
+
+.mathjax-block .md-rawblock-tooltip,
+.md-htmlblock .md-rawblock-tooltip {
+  background-color: #f5f6f7;
+  -webkit-animation: showRawBlockTooltip 0s linear;
+          animation: showRawBlockTooltip 0s linear;
+  border-radius: 4px 4px 0 0;
+}
+
+/* math block */
+.mathjax-block .md-mathblock-panel .code-tooltip[contenteditable="false"] {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-before {
+  padding-top: 6px;
+  border-top-left-radius: 6px;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-after {
+  padding-bottom: 6px;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner {
+  color: #282c34;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-lines {
+  color: #282c34;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-gutters {
+  background-color: #f5f6f7;
+}
+
+.mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-selected,
+.mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-selectedtext {
+  background-color: #bac6e9 !important;
+}
+
+.mathjax-block .md-math-container {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* html block */
+.md-htmlblock .md-htmlblock-panel {
+  border-radius: 6px;
+  border-top-right-radius: 0;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.md-htmlblock .md-htmlblock-panel .md-rawblock-input {
+  padding-top: 14px;
+  padding-bottom: 10px;
+}
+
+.md-htmlblock .md-htmlblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-selected,
+.md-htmlblock .md-htmlblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-selectedtext {
+  background-color: #bac6e9 !important;
+}
+
+/* strong */
+strong {
+  background-color: inherit;
+  color: #18debd;
+}
+
+/* emphasis */
+em {
+  background-color: inherit;
+  color: #e2e2d5;
+}
+
+/* underline */
+u {
+  background-color: inherit;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid #f00;
+  padding-bottom: 1px;
+}
+
+/* code */
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+  font-size: inherit;
+}
+
+code {
+  background-color: rgba(34, 37, 38, 0.05);
+  color: #e7e9e6;
+  font-family: "Fira Code", Consolas, "Lucida Console", "Courier", monospace, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0 2px;
+  padding: 3px 4px 1px;
+  border-radius: 4px;
+}
+
+/* strike */
+del {
+  color: #efeeee;
+  text-decoration: line-through;
+}
+
+/* hightlight */
+mark {
+  color: #282c34;
+  font-weight: 500;
+  padding: 1px 5px 2px;
+  border-radius: 2px;
+}
+
+/* hyperlink */
+a {
+  background-color: inherit;
+  color: #2484c1;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a img {
+  border: none;
+}
+img {
+  border-radius: 7px; /* 添加圆角效果，可根据需要自行调整 */
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+/* code fences */
+.md-fences:after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  background-color: #ff374b;
+  border-radius: 6px;
+  z-index: 999999;
+  box-shadow: 20px 0 #ffc600, 40px 0 #00e03d;
+}
+.CodeMirror.cm-s-inner {
+  margin-top: 15px;
+  background-color: #101215;
+  border-radius: 3px;
+}
+.md-fences {
+  font-family: "JetBrains Mono", Consolas, "Lucida Console", "Courier", monospace, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #0b0a0a;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  margin-bottom: 2.5rem;
+  border: none;
+  border-radius: 6px;
+}
+
+.md-fences[contenteditable="false"]:active, .md-fences[contenteditable="false"]:focus {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.md-fences .code-tooltip {
+  background-color: #282c34;
+  border-radius: 4px;
+}
+
+.md-fences span {
+  color: #abb2bf;
+}
+
+.md-fences .code-tooltip .ty-input {
+  color: #fff;
+  font-weight: 500;
+}
+
+.ty-show .autoComplt-list li.active {
+  background-color: #bac6e9;
+}
+
+/* code container */
+.cm-s-inner {
+  background-color: #282c34;
+}
+
+.cm-s-inner .CodeMirror-gutters {
+  background-color: #282c34;
+  border: none;
+}
+
+.cm-s-inner .CodeMirror-guttermarker,
+.cm-s-inner .CodeMirror-guttermarker-subtle,
+.cm-s-inner .CodeMirror-linenumber {
+  color: #737984;
+}
+
+.cm-s-inner .CodeMirror-cursor {
+  border-left: 1px solid #528bff !important;
+}
+
+.cm-s-inner div.CodeMirror-selected {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.cm-s-inner.CodeMirror-focused div.CodeMirror-selected {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cm-s-inner .CodeMirror-line::-moz-selection,
+.cm-s-inner .CodeMirror-line > span::-moz-selection,
+.cm-s-inner .CodeMirror-line > span > span::-moz-selection {
+  background-color: #bac6e9;
+}
+
+.cm-s-inner .CodeMirror-line::selection,
+.cm-s-inner .CodeMirror-line > span::selection,
+.cm-s-inner .CodeMirror-line > span > span::selection {
+  background-color: #bac6e9;
+}
+
+.cm-s-inner .CodeMirror-activeline-background {
+  background: rgba(0, 0, 0, 0);
+}
+
+.cm-s-inner .CodeMirror-matchingbracket {
+  text-decoration: underline;
+  color: white !important;
+}
+
+.cm-s-inner .CodeMirror-selected,
+.cm-s-inner .CodeMirror-selectedtext {
+  background-color: #404859 !important;
+}
+
+/* code fences color */
+.cm-s-inner .cm-keyword {
+  color: #c678dd !important;
+}
+
+.cm-s-inner .cm-operator {
+  color: #56b6c2 !important;
+}
+
+.cm-s-inner .cm-variable {
+  color: #d19a66 !important;
+}
+
+.cm-s-inner .cm-variable-2 {
+  color: #e06c75 !important;
+}
+
+.cm-s-inner .cm-variable-3 {
+  color: #e06c75 !important;
+}
+
+.cm-s-inner .cm-builtin {
+  color: #e8bf6a !important;
+}
+
+.cm-s-inner .cm-atom {
+  color: #d19a66 !important;
+}
+
+.cm-s-inner .cm-number {
+  color: #d19a66 !important;
+}
+
+.cm-s-inner .cm-def {
+  color: #e06c75 !important;
+}
+
+.cm-s-inner .cm-string {
+  color: #98c379 !important;
+}
+
+.cm-s-inner .cm-string-2 {
+  color: #80cbc4 !important;
+}
+
+.cm-s-inner .cm-comment {
+  color: #629755 !important;
+}
+
+.cm-s-inner .cm-tag {
+  color: #e06c75 !important;
+}
+
+.cm-s-inner .cm-meta {
+  color: #e06c75 !important;
+}
+
+.cm-s-inner .cm-attribute {
+  color: #d19a66 !important;
+}
+
+.cm-s-inner .cm-property {
+  color: #61afef !important;
+}
+
+.cm-s-inner .cm-qualifier {
+  color: #decb6b !important;
+}
+
+.cm-s-inner .cm-error {
+  color: #fff !important;
+  background-color: #ec5f67 !important;
+}
+
+.cm-s-inner .cm-tag.cm-bracket {
+  color: #abb2bf !important;
+}
+
+/* scrollbar */
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 4px;
+}
+
+/* find dialog */
+#typora-quick-open {
+  background-color: #fff;
+  color: #282c34;
+}
+
+#typora-quick-open .typora-quick-open-item.active {
+  background-color: #bac6e9 !important;
+}
+
+#typora-quick-open .ty-quick-open-category-title {
+  border-top: 1px solid #eee !important;
+}
+
+/* modal dialog */
+#common-dialog .modal-dialog .modal-content {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  background-color: #f5f6f7;
+  border: none;
+  border-radius: 6px;
+}
+
+#common-dialog .modal-dialog .modal-content .modal-footer .btn-default:hover {
+  background-color: #bac6e9 !important;
+}
+
+/* preferences */
+.ty-preferences {
+  font-family: "Fira Code", Consolas, "Lucida Console", "Courier", monospace, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #282c34;
+}
+
+.ty-preferences .window-header h2 {
+  font-size: 1.6rem;
+}
+
+.ty-preferences .sidebar {
+  font-size: 1.4rem;
+}
+
+.ty-preferences .sidebar .nav-group-item.active,
+.ty-preferences .sidebar .nav-group-item:active {
+  color: #efefef;
+  background-color: #2f845e;
+}
+
+/* sidebar includes file-tree,articles and outline*/
+.html-for-mac #typora-sidebar {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* focus mode/typewriter mode notification  */
+#md-notification {
+  background-color: #ed5454 !important;
+}
+
+#md-notification #ty-surpress-mode-warning-close-btn:hover {
+  background-color: #bac6e9 !important;
+}
+
+/* Unibody sidebar */
+#megamenu-menu-sidebar {
+  color: #282c34;
+  font-size: 1.2rem;
+}
+
+#megamenu-menu-sidebar #megamenu-menu-list {
+  border-top-color: rgba(171, 192, 208, 0.1);
+  background-color: #222526;
+}
+
+#megamenu-menu-sidebar #megamenu-menu-list li {
+  font-size: 0.8rem;
+}
+
+#megamenu-menu-sidebar #megamenu-menu-list li a {
+  color: #abc0d0 !important;
+}
+
+#megamenu-menu-sidebar #megamenu-menu-list li a.active, #megamenu-menu-sidebar #megamenu-menu-list li a:hover {
+  background-color: #3e4249 !important;
+}
+
+#megamenu-menu-sidebar #megamenu-menu-list li a#m-saved {
+  background-color: transparent !important;
+}
+
+.megamenu-opened .megamenu-menu {
+  left: 0;
+}
+
+#megamenu-content {
+  color: #000;
+}
+
+/* sidebar */
+#typora-sidebar {
+  background-color: #fafafa;
+  border-right: 1px solid #eee;
+}
+
+#typora-sidebar #sidebar-loading-template.file-list-item {
+  border-bottom: transparent !important;
+  background-color: rgba(171, 192, 208, 0.1);
+}
+
+#typora-sidebar .info-panel-tab-wrapper .info-panel-tab:hover {
+  color: inherit;
+}
+
+#typora-sidebar .info-panel-tab-wrapper .info-panel-tab .info-panel-tab-border {
+  background-color: #2f845e;
+  border-radius: 4px;
+}
+
+#typora-sidebar .sidebar-osx-tab .sidebar-tabs {
+  border-bottom-color: transparent;
+}
+
+#typora-sidebar #sidebar-content .file-list-item {
+  border-bottom: 1px solid #eee;
+}
+
+#typora-sidebar #sidebar-content .file-list-item.active {
+  background-color: rgba(66, 185, 131, 0.1);
+  border-left: 4px solid #2f845e;
+}
+
+#typora-sidebar #sidebar-content .ty-sidebar-search-panel {
+  border-bottom: 1px solid #eee;
+}
+
+#typora-sidebar #sidebar-content .ty-sidebar-search-panel .searchpanel-search-option-btn {
+  background-color: #fff;
+}
+
+#typora-sidebar #sidebar-content .sidebar-content-content .file-node-content {
+  line-height: 1.375rem;
+  font-size: 1rem;
+  color: #282c34 !important;
+}
+
+#typora-sidebar #sidebar-content .sidebar-content-content .file-tree-node:not(.file-node-root):hover > .file-node-background {
+  border-left: 4px solid #2f845e;
+  background-color: rgba(66, 185, 131, 0.1);
+}
+
+#typora-sidebar #sidebar-content .sidebar-content-content .file-tree-node.active > .file-node-background {
+  border-color: #2f845e;
+  background-color: rgba(66, 185, 131, 0.1);
+}
+
+#typora-sidebar #sidebar-content .sidebar-content-content #file-library-list-children .file-library-file-node:hover {
+  border-left: 4px solid #2f845e;
+  background-color: rgba(66, 185, 131, 0.1);
+}
+
+#typora-sidebar #sidebar-content #outline-content .no-collapse-outline .outline-item {
+  line-height: 1.375rem;
+  font-size: 1rem;
+}
+
+#typora-sidebar #sidebar-content #outline-content .outline-expander:before {
+  color: inherit;
+  font-size: 14px;
+  top: auto;
+  content: "\f0da";
+  font-family: FontAwesome;
+}
+
+#typora-sidebar #sidebar-content #outline-content .outline-expander:hover:before,
+#typora-sidebar #sidebar-content #outline-content .outline-item-open > .outline-item > .outline-expander:before {
+  content: "\f0d7";
+}
+
+#typora-sidebar #sidebar-content #outline-content .outline-item:hover {
+  background-color: #bac6e9 !important;
+}
+
+#typora-sidebar #ty-sidebar-footer {
+  border-top: 1px solid #eee;
+}
+
+#typora-sidebar #ty-sidebar-footer .sidebar-footer-item:hover {
+  background-color: #bac6e9 !important;
+}
+
+#typora-sidebar #ty-sidebar-footer #sidebar-files-menu {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* dropdown menu */
+.dropdown-menu {
+  background-color: #fff;
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-top: 1px solid #eee;
+}
+
+.dropdown-menu > .show + .menuitem-group-label.show {
+  border-top: 1px solid #eee !important;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > li > a:hover,
+.dropdown-menu .menu-style-btn.active {
+  background-color: #bac6e9 !important;
+}
+
+.dropdown-menu li a {
+  color: #282c34 !important;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #bac6e9 !important;
+}
+
+.dropdown-menu .divider {
+  border-color: #fff;
+}
+
+/* sidebar-files-menu,toc-dropmenu,suggest common */
+#sidebar-files-menu,
+#toc-dropmenu,
+.auto-suggest-container {
+  background-color: #fff;
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border: none;
+}
+
+#toc-dropmenu .outline-item:hover {
+  background-color: #bac6e9 !important;
+}
+
+/* emoji,fences,word suggest */
+.auto-suggest-container {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.auto-suggest-container li.active, .auto-suggest-container li:hover {
+  background-color: #bac6e9 !important;
+}
+
+/** source code mode */
+#typora-source {
+  font-family: "Fira Code", Consolas, "Lucida Console", "Courier", monospace, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #6a6a6a;
+}
+
+#typora-source .cm-s-typora-default .cm-header,
+#typora-source .cm-s-typora-default .cm-property,
+#typora-source .CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+  color: #428bca;
+}
+
+#typora-source .cm-s-typora-default .cm-atom,
+#typora-source .cm-s-typora-default .cm-number {
+  color: #777777;
+}
+
+#typora-source .CodeMirror-selectedtext {
+  background-color: transparent !important;
+}
+
+.typora-node .file-list-item-parent-loc,
+.typora-node .file-list-item-time,
+.typora-node .file-list-item-summary {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+
+
+
+</style><title>markdown语法学习</title>
 </head>
-<body>
-    <!-- 动态背景效果 -->
-    <div class="background-effects">
-        <div class="gradient-orbs orb-1"></div>
-        <div class="gradient-orbs orb-2"></div>
-    </div>
-
-    <!-- 返回按钮 -->
-    <div class="back-to-home">
-        <a href="index.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-            <span>返回首页</span>
-        </a>
-    </div>
-
-    <div class="article-main-container">
-        <!-- 文章导航侧边栏 -->
-        <aside class="article-sidebar">
-            <h3>文章目录</h3>
-            <ul class="article-toc">
-<li><a href="#markdown语法学习">markdown语法学习</a></li>
-<li><a href="#一标题">一、标题</a></li>
-<li><a href="#二文本格式">二、文本格式</a></li>
-<li><a href="#三列表">三、列表</a></li>
-<li class="toc-h2"><a href="#无序列表">无序列表</a></li>
-<li class="toc-h2"><a href="#有序列表">有序列表</a></li>
-<li class="toc-h2"><a href="#任务列表">任务列表</a></li>
-<li><a href="#四链接">四、链接</a></li>
-<li class="toc-h2"><a href="#基本链接">基本链接</a></li>
-<li><a href="#五图片">五、图片</a></li>
-<li><a href="#六代码">六、代码</a></li>
-<li class="toc-h2"><a href="#1-行内代码">1. 行内代码</a></li>
-<li class="toc-h2"><a href="#2-代码块">2. 代码块</a></li>
-<li><a href="#七引用">七、引用</a></li>
-<li><a href="#八表格">八、表格</a></li>
-<li><a href="#九分割线">九、分割线</a></li>
-<li><a href="#十脚注">十、脚注</a></li>
-            </ul>
-        </aside>
-
-        <!-- 文章内容区域 -->
-        <main class="article-content-wrapper">
-            <header class="article-header">
-                <h1 class="article-title">markdown语法学习</h1>
-                <div class="article-meta">
-                    <span class="article-tag">教程归纳</span>
-                    <span>•</span>
-                    <span>上传时间：2025-12-05</span>
-                </div>
-            </header>
-
-            <div class="article-body">
-                <!-- 以下是原有的文章内容 -->
-<div class="" id="write"><h1 id="markdown语法学习"><span>markdown语法学习</span></h1><h1 id="一标题"><span>一、标题</span></h1><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="cm-header cm-header1 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header1"># 一级标题</span></span></pre></div><pre class="cm-header cm-header2 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header2">## 二级标题</span></span></pre><pre class="cm-header cm-header3 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header3">### 三级标题</span></span></pre><pre class="cm-header cm-header4 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header4">#### 四级标题</span></span></pre><pre class="cm-header cm-header5 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header5">##### 五级标题</span></span></pre><pre class="cm-header cm-header6 CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-header cm-header6">###### 六级标题</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 138px;"></div><div class="CodeMirror-gutters" style="display: none; height: 138px;"></div></div></div></pre><h1 id="二文本格式"><span>二、文本格式</span></h1><figure><table><thead><tr><th style="text-align:center;"><span>格式</span></th><th style="text-align:center;"><span>语法</span></th><th style="text-align:center;"><span>效果</span></th></tr></thead><tbody><tr><td style="text-align:center;"><span>斜体</span></td><td style="text-align:center;"><code>*斜体*</code><span> 或 </span><code>_斜体_</code></td><td style="text-align:center;"><em><span>斜体</span></em></td></tr><tr><td style="text-align:center;"><span>粗体</span></td><td style="text-align:center;"><code>**粗体**</code><span> 或 </span><code>__粗体__</code></td><td style="text-align:center;"><strong><span>粗体</span></strong></td></tr><tr><td style="text-align:center;"><span>粗斜体</span></td><td style="text-align:center;"><code>***粗斜体***</code></td><td style="text-align:center;"><em><strong><span>粗斜体</span></strong></em></td></tr><tr><td style="text-align:center;"><span>删除线</span></td><td style="text-align:center;"><code>~~删除线~~</code></td><td style="text-align:center;"><del><span>删除线</span></del></td></tr><tr><td style="text-align:center;"><span>下划线</span></td><td style="text-align:center;"><code>&lt;u&gt;下划线&lt;/u&gt;</code></td><td style="text-align:center;"><u><span>下划线</span></u></td></tr></tbody></table></figure><h1 id="三列表"><span>三、列表</span></h1><ul><li><h2 id="无序列表"><span>无序列表</span></h2><p><span>使用 </span><code>-</code><span>、</span><code>+</code><span> 或 </span><code>*</code><span> 作为标记</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">项目1</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">项目2</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">  <span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">子项目2.1</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">  <span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">子项目2.2</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 92px;"></div><div class="CodeMirror-gutters" style="display: none; height: 92px;"></div></div></div></pre></li><li><h2 id="有序列表"><span>有序列表</span></h2><p><span>使用数字 +</span><code>.</code><span> 作为标记</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">1. </span><span class="cm-variable-2">第一步</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">2. </span><span class="cm-variable-2">第二步</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   <span class="cm-block-start cm-variable-2">1. </span><span class="cm-variable-2">第二步的子步骤1</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">   <span class="cm-block-start cm-variable-2">2. </span><span class="cm-variable-2">第二步的子步骤2</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">3. </span><span class="cm-variable-2">第三步</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 115px;"></div><div class="CodeMirror-gutters" style="display: none; height: 115px;"></div></div></div></pre></li><li><h2 id="任务列表"><span>任务列表</span></h2><p><span>使用 </span><code>- [ ]</code><span> 表示未完成，</span><code>- [x]</code><span> 表示已完成</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-property">[x] </span><span class="cm-variable-2">已完成任务</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-meta">[ ] </span><span class="cm-variable-2">未完成任务</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-meta">[ ] </span><span class="cm-variable-2">待办任务</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><ul><li class="md-task-list-item task-list-item task-list-done"><input checked="" type="checkbox"/><p><span>已完成任务</span></p></li><li class="md-task-list-item task-list-item task-list-not-done"><input type="checkbox"/><p><span>未完成任务</span></p></li></ul></li></ul><h1 id="四链接"><span>四、链接</span></h1><ul><li><h2 id="基本链接"><span>基本链接</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-link">[链接文本]</span><span class="cm-string">(链接地址 "可选标题")</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 23px;"></div><div class="CodeMirror-gutters" style="display: none; height: 23px;"></div></div></div></pre></li></ul><p><span> </span><span>eg:</span><a href="https://www.baidu.com" title="百度搜索"><span>百度</span></a></p><h1 id="五图片"><span>五、图片</span></h1><p><span>语法与链接类似，前面多一个 </span><code>!</code></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tag">![图片文本]</span><span class="cm-string">(图片地址 "可选标题")</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 23px;"></div><div class="CodeMirror-gutters" style="display: none; height: 23px;"></div></div></div></pre><p><span>eg:</span><img alt="示例图片" referrerpolicy="no-referrer" src="https://haowallpaper.com/link/common/file/previewFileImg/17759388304395648" title="示例图片"/></p><h1 id="六代码"><span>六、代码</span></h1><h2 id="1-行内代码"><span>1. 行内代码</span></h2><p><span>使用反引号 ``包裹</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">这是行内代码 <span class="cm-comment">`print("Hello World")`</span> 的示例</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 23px;"></div><div class="CodeMirror-gutters" style="display: none; height: 23px;"></div></div></div></pre><p><span>eg:</span><code>print("Hello World")</code></p><h2 id="2-代码块"><span>2. 代码块</span></h2><p><span>使用三个反引号 ```包裹，可指定语言</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">```python</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">def hello():</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-comment">print("Hello, Markdown!")</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><p><span>eg: </span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="python" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="python"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">def</span> <span class="cm-def">hello</span>():</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-builtin">print</span>(<span class="cm-string">"Hello World"</span>)</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 46px;"></div><div class="CodeMirror-gutters" style="display: none; height: 46px;"></div></div></div></pre><h1 id="七引用"><span>七、引用</span></h1><p><span>使用 </span><code>&gt;</code><span> 表示引用，可嵌套</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="cm-atom CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-atom">&gt; </span><span class="cm-atom">这是一级引用</span></span></pre></div><pre class="cm-atom CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-number">&gt; &gt; </span><span class="cm-number">这是二级引用</span></span></pre><pre class="cm-atom CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-atom">&gt; &gt; &gt; </span><span class="cm-atom">这是三级引用</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><p><span>eg;</span></p><blockquote><p><span>这是一级引用</span></p><blockquote><p><span>这是二级引用</span></p><blockquote><p><span>这是三级引用</span></p></blockquote></blockquote></blockquote><h1 id="八表格"><span>八、表格</span></h1><p><span>使用 </span><code>|</code><span> 分隔列，</span><code>-</code><span> 分隔表头和内容，</span><code>:</code><span> 表示对齐方式</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="markdown" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="cm-table-row CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 姓名 | 年龄 | 职业 |</span></pre></div><pre class="cm-table-row CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">| :--- | :--: | ---: |</span></pre><pre class="cm-table-row CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 张三 | 25   | 工程师 |</span></pre><pre class="cm-table-row CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 李四 | 30   | 设计师 |</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 92px;"></div><div class="CodeMirror-gutters" style="display: none; height: 92px;"></div></div></div></pre><figure><table><thead><tr><th style="text-align:left;"><span>姓名</span></th><th><span>年龄</span></th><th><span>职业</span></th></tr></thead><tbody><tr><td style="text-align:left;"> </td><td> </td><td> </td></tr></tbody></table></figure><h1 id="九分割线"><span>九、分割线</span></h1><p><span>使用三个及以上的 </span><code>-</code><span>、</span><code>*</code><span> 或 </span><code>_</code></p><p><span>eg:</span></p><hr/><p><span>这是一条分割线 </span></p><hr/><p><span>这是一条分割线</span></p><hr/><h1 id="十脚注"><span>十、脚注</span></h1><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" spellcheck="false"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 9.51875px; left: 8px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">这是要脚注的内容[^1]</span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">在文章尾部可以添加脚注内容,格式为： [^1]:脚注内容</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">二者相关联</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 69px;"></div><div class="CodeMirror-gutters" style="display: none; height: 69px;"></div></div></div></pre><p><span>效果：这是要脚注的内容</span><sup class="md-footnote"><a href="#dfref-footnote-1" name="ref-footnote-1">1</a></sup></p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><div class="footnotes-area"><hr/>
-<div class="footnote-line"><span class="md-fn-count">1</span> <span>脚注内容</span> <a class="reversefootnote" href="#ref-footnote-1" name="dfref-footnote-1" title="回到文档">↩</a></div></div></div>
-            </div>
-
-            <div class="article-actions">
-                <a href="index.html" class="article-btn">
-                    <i class="fas fa-home"></i>
-                    <span>返回首页</span>
-                </a>
-                <a href="#top" class="article-btn">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>回到顶部</span>
-                </a>
-            </div>
-        </main>
-    </div>
-
-    <!-- 引入鼠标特效JS -->
-    <script src="js/app.js"></script>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h1 id='markdown语法学习'><span>markdown语法学习</span></h1><h1 id='一标题'><span>一、标题</span></h1><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" cm-header cm-header1 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header1"># 一级标题</span></span></pre></div><pre class=" cm-header cm-header2 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header2">## 二级标题</span></span></pre><pre class=" cm-header cm-header3 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header3">### 三级标题</span></span></pre><pre class=" cm-header cm-header4 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header4">#### 四级标题</span></span></pre><pre class=" cm-header cm-header5 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header5">##### 五级标题</span></span></pre><pre class=" cm-header cm-header6 CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-header cm-header6">###### 六级标题</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 185px;"></div><div class="CodeMirror-gutters" style="display: none; height: 185px;"></div></div></div></pre><h1 id='二文本格式'><span>二、文本格式</span></h1><figure><table><thead><tr><th style='text-align:center;' ><span>格式</span></th><th style='text-align:center;' ><span>语法</span></th><th style='text-align:center;' ><span>效果</span></th></tr></thead><tbody><tr><td style='text-align:center;' ><span>斜体</span></td><td style='text-align:center;' ><code>*斜体*</code><span> 或 </span><code>_斜体_</code></td><td style='text-align:center;' ><em><span>斜体</span></em></td></tr><tr><td style='text-align:center;' ><span>粗体</span></td><td style='text-align:center;' ><code>**粗体**</code><span> 或 </span><code>__粗体__</code></td><td style='text-align:center;' ><strong><span>粗体</span></strong></td></tr><tr><td style='text-align:center;' ><span>粗斜体</span></td><td style='text-align:center;' ><code>***粗斜体***</code></td><td style='text-align:center;' ><em><strong><span>粗斜体</span></strong></em></td></tr><tr><td style='text-align:center;' ><span>删除线</span></td><td style='text-align:center;' ><code>~~删除线~~</code></td><td style='text-align:center;' ><del><span>删除线</span></del></td></tr><tr><td style='text-align:center;' ><span>下划线</span></td><td style='text-align:center;' ><code>&lt;u&gt;下划线&lt;/u&gt;</code></td><td style='text-align:center;' ><u><span>下划线</span></u></td></tr></tbody></table></figure><h1 id='三列表'><span>三、列表</span></h1><ul><li><h2 id='无序列表'><span>无序列表</span></h2><p><span>使用 </span><code>-</code><span>、</span><code>+</code><span> 或 </span><code>*</code><span> 作为标记</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">项目1</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">项目2</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">子项目2.1</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-block-start cm-variable-2">- </span><span class="cm-variable-2">子项目2.2</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 123px;"></div><div class="CodeMirror-gutters" style="display: none; height: 123px;"></div></div></div></pre></li><li><h2 id='有序列表'><span>有序列表</span></h2><p><span>使用数字 +</span><code>.</code><span> 作为标记</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">1. </span><span class="cm-variable-2">第一步</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">2. </span><span class="cm-variable-2">第二步</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-block-start cm-variable-2">1. </span><span class="cm-variable-2">第二步的子步骤1</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-block-start cm-variable-2">2. </span><span class="cm-variable-2">第二步的子步骤2</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-variable-2">3. </span><span class="cm-variable-2">第三步</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 154px;"></div><div class="CodeMirror-gutters" style="display: none; height: 154px;"></div></div></div></pre></li><li><h2 id='任务列表'><span>任务列表</span></h2><p><span>使用 </span><code>- [ ]</code><span> 表示未完成，</span><code>- [x]</code><span> 表示已完成</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-property">[x] </span><span class="cm-variable-2">已完成任务</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-meta">[ ] </span><span class="cm-variable-2">未完成任务</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-block-start cm-block-start cm-variable-2">- </span><span class="cm-formatting cm-formatting-task cm-block-start cm-meta">[ ] </span><span class="cm-variable-2">待办任务</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 93px;"></div><div class="CodeMirror-gutters" style="display: none; height: 93px;"></div></div></div></pre><ul><li class='md-task-list-item task-list-item task-list-done' ><input type='checkbox' checked/><p><span>已完成任务</span></p></li><li class='md-task-list-item task-list-item task-list-not-done' ><input type='checkbox' /><p><span>未完成任务</span></p></li></ul></li></ul><h1 id='四链接'><span>四、链接</span></h1><ul><li><h2 id='基本链接'><span>基本链接</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-link">[链接文本]</span><span class="cm-string">(链接地址 "可选标题")</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 31px;"></div><div class="CodeMirror-gutters" style="display: none; height: 31px;"></div></div></div></pre></li></ul><p><span>		</span><span>eg:</span><a href='https://www.baidu.com' title='百度搜索'><span>百度</span></a></p><h1 id='五图片'><span>五、图片</span></h1><p><span>语法与链接类似，前面多一个 </span><code>!</code></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tag">![图片文本]</span><span class="cm-string">(图片地址 "可选标题")</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 31px;"></div><div class="CodeMirror-gutters" style="display: none; height: 31px;"></div></div></div></pre><p><span>eg:</span><img src="https://haowallpaper.com/link/common/file/previewFileImg/17759388304395648" referrerpolicy="no-referrer" alt="示例图片" title="示例图片"></p><h1 id='六代码'><span>六、代码</span></h1><h2 id='1-行内代码'><span>1. 行内代码</span></h2><p><span>使用反引号 ``包裹</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">这是行内代码 <span class="cm-comment">`print("Hello World")`</span> 的示例</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 31px;"></div><div class="CodeMirror-gutters" style="display: none; height: 31px;"></div></div></div></pre><p><span>eg:</span><code>print(&quot;Hello World&quot;)</code></p><h2 id='2-代码块'><span>2. 代码块</span></h2><p><span>使用三个反引号 ```包裹，可指定语言</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">```python</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">def hello():</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">print("Hello, Markdown!")</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 93px;"></div><div class="CodeMirror-gutters" style="display: none; height: 93px;"></div></div></div></pre><p><span>eg: </span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="python"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="python"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">def</span> <span class="cm-def">hello</span>():</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-builtin">print</span>(<span class="cm-string">"Hello World"</span>)</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 62px;"></div><div class="CodeMirror-gutters" style="display: none; height: 62px;"></div></div></div></pre><h1 id='七引用'><span>七、引用</span></h1><p><span>使用 </span><code>&gt;</code><span> 表示引用，可嵌套</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" cm-atom CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-block-start cm-atom">&gt; </span><span class=" cm-atom">这是一级引用</span></span></pre></div><pre class=" cm-atom CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-block-start cm-number">&gt; &gt; </span><span class=" cm-number">这是二级引用</span></span></pre><pre class=" cm-atom CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class=" cm-block-start cm-atom">&gt; &gt; &gt; </span><span class=" cm-atom">这是三级引用</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 93px;"></div><div class="CodeMirror-gutters" style="display: none; height: 93px;"></div></div></div></pre><p><span>eg;</span></p><blockquote><p><span>这是一级引用</span></p><blockquote><p><span>这是二级引用</span></p><blockquote><p><span>这是三级引用</span></p></blockquote></blockquote></blockquote><h1 id='八表格'><span>八、表格</span></h1><p><span>使用 </span><code>|</code><span> 分隔列，</span><code>-</code><span> 分隔表头和内容，</span><code>:</code><span> 表示对齐方式</span></p><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang="markdown"><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="markdown"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" cm-table-row CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 姓名 | 年龄 | 职业 |</span></pre></div><pre class=" cm-table-row CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">| :--- | :--: | ---: |</span></pre><pre class=" cm-table-row CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 张三 | 25 &nbsp; | 工程师 |</span></pre><pre class=" cm-table-row CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">| 李四 | 30 &nbsp; | 设计师 |</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 123px;"></div><div class="CodeMirror-gutters" style="display: none; height: 123px;"></div></div></div></pre><figure><table><thead><tr><th style='text-align:left;' ><span>姓名</span></th><th><span>年龄</span></th><th><span>职业</span></th></tr></thead><tbody><tr><td style='text-align:left;' >&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></figure><h1 id='九分割线'><span>九、分割线</span></h1><p><span>使用三个及以上的 </span><code>-</code><span>、</span><code>*</code><span> 或 </span><code>_</code></p><p><span>eg:</span></p><hr /><p><span>这是一条分割线 </span></p><hr /><p><span>这是一条分割线</span></p><hr /><h1 id='十脚注'><span>十、脚注</span></h1><pre class="md-fences md-end-block ty-contain-cm modeLoaded" spellcheck="false" lang=""><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">这是要脚注的内容[^1]</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">在文章尾部可以添加脚注内容,格式为： [^1]:脚注内容</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">二者相关联</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 93px;"></div><div class="CodeMirror-gutters" style="display: none; height: 93px;"></div></div></div></pre><p><span>效果：这是要脚注的内容</span><sup class='md-footnote'><a href='#dfref-footnote-1' name='ref-footnote-1'>1</a></sup></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><div class='footnotes-area'  ><hr/>
+<div class='footnote-line'><span class='md-fn-count'>1</span> <span>脚注内容</span> <a name='dfref-footnote-1' href='#ref-footnote-1' title='回到文档' class='reversefootnote' >↩</a></div></div></div></div>
 </body>
 </html>

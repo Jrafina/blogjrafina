@@ -48,8 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 categoryTitle.textContent = '教程归纳';
                 backAllBtn.style.display = 'inline-flex';
             } else if (category === 'learning') {
-                // 修改：更新分类名称为"学习合集"
                 categoryTitle.textContent = '学习合集';
+                backAllBtn.style.display = 'inline-flex';
+            } else if (category === 'websites') {
+                categoryTitle.textContent = '功能网站';
                 backAllBtn.style.display = 'inline-flex';
             }
 
@@ -540,25 +542,11 @@ function initCustomCursor() {
     // 点击效果
     document.addEventListener('mousedown', () => {
         cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
-        cursor.style.backgroundColor = 'rgba(239, 68, 68, 0.5)';
+        cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.8)';
     });
 
     document.addEventListener('mouseup', () => {
-        cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
-        cursor.style.backgroundColor = 'rgba(139, 92, 246, 0.3)';
-
-        setTimeout(() => {
-            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-            cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.5)';
-        }, 150);
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.5)';
     });
-
-    // 添加CSS样式隐藏默认光标
-    const style = document.createElement('style');
-    style.textContent = `
-        * {
-            cursor: none !important;
-        }
-    `;
-    document.head.appendChild(style);
 }
