@@ -167,6 +167,8 @@
                 <div class="text-center mb-3">
                     <div id="split-status" class="text-neutral text-lg mb-2">请选择文件和设置参数</div>
                     <div id="split-time" class="text-secondary font-medium"></div>
+                    <!-- 分割文件下载按钮容器 -->
+                    <div id="split-download-container" class="mt-4"></div>
                 </div>
                 <div class="flex justify-center mt-4">
                     <div class="text-xs text-gray-400">
@@ -254,6 +256,8 @@
                 <div class="text-center mb-3">
                     <div id="merge-status" class="text-neutral text-lg mb-2">请选择包含分割文件的文件夹</div>
                     <div id="merge-time" class="text-secondary font-medium"></div>
+                    <!-- 合并文件下载按钮容器 -->
+                    <div id="merge-download-container" class="mt-4"></div>
                 </div>
                 <div class="flex justify-center mt-4">
                     <div class="text-xs text-gray-400">
@@ -282,6 +286,8 @@
         let isMergeCancelled = false;
         let validSplitFiles = []; // 存储验证后的分割文件
         let originalFileName = ''; // 原始文件名
+        let lastSplitFiles = []; // 保存最后分割的文件信息
+        let lastMergedFile = null; // 保存最后合并的文件
 
         // 显示指定标签页
         function showTab(tabId) {
@@ -320,6 +326,8 @@
                 document.getElementById('split-time').textContent = '';
                 document.getElementById('split-progress-bar').style.width = '0%';
                 document.getElementById('split-progress-text').textContent = '0%';
+                // 清空下载按钮
+                document.getElementById('split-download-container').innerHTML = '';
             }
         }
 
@@ -493,6 +501,7 @@
             document.getElementById('merge-progress-bar').style.width = '0%';
             document.getElementById('merge-progress-text').textContent = '0%';
             document.getElementById('start-merge-btn').disabled = true;
+            document.getElementById('merge-download-container').innerHTML = '';
             validSplitFiles = [];
             originalFileName = '';
             document.getElementById('merge-output-name').value = '';
@@ -533,8 +542,10 @@
             document.getElementById('split-time').textContent = '';
             document.getElementById('split-progress-bar').style.width = '0%';
             document.getElementById('split-progress-text').textContent = '0%';
+            document.getElementById('split-download-container').innerHTML = '';
             
             isSplitCancelled = false;
+            lastSplitFiles = []; // 清空上次的分割文件记录
             
             // 开始分割（使用Web Worker避免UI阻塞）
             splitWorker = new Worker(URL.createObjectURL(new Blob([`
@@ -630,6 +641,14 @@
                         
                         // 新文件名格式：前缀 + part + 数字 + .zip
                         const fileName = `${processedPrefix}part${partNumber}.zip`;
+                        
+                        // 保存文件信息，用于稍后下载
+                        lastSplitFiles.push({
+                            blob: blob,
+                            fileName: fileName
+                        });
+                        
+                        // 自动下载
                         saveAs(blob, fileName);
                         
                         // 实时更新状态
@@ -650,8 +669,18 @@
                         if (e.data.cancelled || isSplitCancelled) {
                             document.getElementById('split-status').textContent = '分割已取消';
                         } else {
-                            document.getElementById('split-status').textContent = `文件分割完成，共生成 ${e.data.totalChunks} 个部分，已自动下载`;
+                            document.getElementById('split-status').textContent = `文件分割完成，共生成 ${e.data.totalChunks} 个部分`;
                             document.getElementById('split-time').textContent = formatTime(elapsedTime);
+                            
+                            // 显示重新下载所有分割文件的按钮
+                            if (lastSplitFiles.length > 0) {
+                                const downloadContainer = document.getElementById('split-download-container');
+                                downloadContainer.innerHTML = `
+                                    <button onclick="downloadAllSplitFiles()" class="btn-primary">
+                                        <i class="fa fa-download mr-2"></i>重新下载所有分割文件
+                                    </button>
+                                `;
+                            }
                         }
                         
                         // 重置按钮状态
@@ -669,6 +698,44 @@
                 outputPrefix: outputPrefix,
                 isCancelled: false
             });
+        }
+
+        // 下载所有分割文件
+        function downloadAllSplitFiles() {
+            if (lastSplitFiles.length === 0) {
+                alert('没有可下载的分割文件');
+                return;
+            }
+            
+            // 逐个下载分割文件
+            let downloadedCount = 0;
+            const totalCount = lastSplitFiles.length;
+            
+            // 创建下载状态显示
+            const statusElement = document.getElementById('split-status');
+            const originalStatus = statusElement.textContent;
+            
+            // 开始逐个下载
+            const downloadNextFile = (index) => {
+                if (index >= lastSplitFiles.length) {
+                    statusElement.textContent = `已重新下载所有 ${totalCount} 个分割文件`;
+                    return;
+                }
+                
+                const fileInfo = lastSplitFiles[index];
+                statusElement.textContent = `正在重新下载第 ${index + 1}/${totalCount} 个分割文件...`;
+                
+                // 下载当前文件
+                saveAs(fileInfo.blob, fileInfo.fileName);
+                
+                // 延迟一下，避免浏览器限制
+                setTimeout(() => {
+                    downloadNextFile(index + 1);
+                }, 300);
+            };
+            
+            // 开始下载第一个文件
+            downloadNextFile(0);
         }
 
         // 取消分割
@@ -696,6 +763,7 @@
             document.getElementById('merge-time').textContent = '';
             document.getElementById('merge-progress-bar').style.width = '0%';
             document.getElementById('merge-progress-text').textContent = '0%';
+            document.getElementById('merge-download-container').innerHTML = '';
             
             isMergeCancelled = false;
             
@@ -758,6 +826,12 @@
                 const blob = new Blob(mergedData, { type: 'application/zip' });
                 const finalName = outputName.endsWith('.zip') ? outputName : `${outputName}.zip`;
                 
+                // 保存合并后的文件信息
+                lastMergedFile = {
+                    blob: blob,
+                    fileName: finalName
+                };
+                
                 // 自动下载合并后的文件
                 saveAs(blob, finalName);
                 
@@ -766,8 +840,16 @@
                 const elapsedTime = (endTime - startTime) / 1000;
                 
                 updateMergeProgress(100);
-                document.getElementById('merge-status').textContent = `文件合并完成: ${finalName}，已自动下载`;
+                document.getElementById('merge-status').textContent = `文件合并完成: ${finalName}`;
                 document.getElementById('merge-time').textContent = formatTime(elapsedTime);
+                
+                // 显示重新下载按钮
+                const downloadContainer = document.getElementById('merge-download-container');
+                downloadContainer.innerHTML = `
+                    <button onclick="downloadMergedFile()" class="btn-primary">
+                        <i class="fa fa-download mr-2"></i>重新下载合并文件
+                    </button>
+                `;
                 
             } catch (error) {
                 document.getElementById('merge-status').textContent = error.message;
@@ -777,6 +859,27 @@
                 document.getElementById('cancel-merge-btn').disabled = true;
                 mergeWorker = null;
             }
+        }
+
+        // 下载合并后的文件
+        function downloadMergedFile() {
+            if (!lastMergedFile) {
+                alert('没有可下载的合并文件');
+                return;
+            }
+            
+            // 下载文件
+            saveAs(lastMergedFile.blob, lastMergedFile.fileName);
+            
+            // 更新状态
+            const statusElement = document.getElementById('merge-status');
+            const originalStatus = statusElement.textContent;
+            statusElement.textContent = '正在重新下载合并文件...';
+            
+            // 稍后恢复状态
+            setTimeout(() => {
+                statusElement.textContent = originalStatus;
+            }, 2000);
         }
 
         // 读取文件块的元数据（增加容错）
