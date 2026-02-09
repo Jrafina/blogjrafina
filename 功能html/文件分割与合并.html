@@ -347,8 +347,8 @@
                 return file.name.endsWith('.zip');
             });
             
-            // 第一步：先筛选.partX.zip格式的文件
-            const partFiles = splitFiles.filter(file => /\.part\d+\.zip$/i.test(file.name));
+            // 修改：更新正则表达式以匹配新的文件名格式（原名partX.zip）
+            const partFiles = splitFiles.filter(file => /part\d+\.zip$/i.test(file.name));
             
             if (splitFiles.length === 0) {
                 document.getElementById('merge-validation').innerHTML = '<span class="text-danger"><i class="fa fa-exclamation-circle mr-1"></i>未找到ZIP文件</span>';
@@ -357,7 +357,7 @@
             }
             
             if (partFiles.length === 0) {
-                document.getElementById('merge-validation').innerHTML = '<span class="text-amber-500"><i class="fa fa-warning mr-1"></i>未找到分割后的文件（.partX.zip），仅找到普通ZIP文件</span>';
+                document.getElementById('merge-validation').innerHTML = '<span class="text-amber-500"><i class="fa fa-warning mr-1"></i>未找到分割后的文件（*partX.zip），仅找到普通ZIP文件</span>';
                 document.getElementById('merge-status').textContent = '未找到分割后的文件';
                 // 显示找到的普通zip文件
                 const fileList = document.getElementById('merge-files-list');
@@ -503,7 +503,7 @@
             const fileInput = document.getElementById('split-file-input');
             const splitSize = parseInt(document.getElementById('split-size').value);
             const splitUnit = document.getElementById('split-unit').value;
-            const outputPrefix = document.getElementById('split-output-prefix').value || 'split';
+            let outputPrefix = document.getElementById('split-output-prefix').value || 'split';
             
             // 验证输入
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -618,9 +618,26 @@
                         combined.set(metaBytes, metaLength.byteLength);
                         combined.set(new Uint8Array(e.data.data), metaLength.byteLength + metaBytes.length);
                         
-                        // 保存分块文件
+                        // 保存分块文件 - 修改：使用新的命名格式（原名partX.zip）
                         const blob = new Blob([combined], { type: 'application/zip' });
-                        saveAs(blob, `${outputPrefix}.part${e.data.index + 1}.zip`);
+                        const partNumber = e.data.index + 1;
+                        
+                        // 确保前缀以.zip结尾则去掉.zip
+                        let processedPrefix = outputPrefix;
+                        if (processedPrefix.toLowerCase().endsWith('.zip')) {
+                            processedPrefix = processedPrefix.slice(0, -4);
+                        }
+                        
+                        // 新文件名格式：前缀 + part + 数字 + .zip
+                        const fileName = `${processedPrefix}part${partNumber}.zip`;
+                        saveAs(blob, fileName);
+                        
+                        // 实时更新状态
+                        if (e.data.index === 0) {
+                            document.getElementById('split-status').textContent = `正在下载第1个分割文件...`;
+                        } else if (e.data.index === e.data.totalChunks - 1) {
+                            document.getElementById('split-status').textContent = `正在下载最后一个分割文件...`;
+                        }
                         break;
                         
                     case 'done':
@@ -633,7 +650,7 @@
                         if (e.data.cancelled || isSplitCancelled) {
                             document.getElementById('split-status').textContent = '分割已取消';
                         } else {
-                            document.getElementById('split-status').textContent = `文件分割完成，共生成 ${e.data.totalChunks} 个部分`;
+                            document.getElementById('split-status').textContent = `文件分割完成，共生成 ${e.data.totalChunks} 个部分，已自动下载`;
                             document.getElementById('split-time').textContent = formatTime(elapsedTime);
                         }
                         
@@ -740,6 +757,8 @@
                 // 完成合并，保存文件
                 const blob = new Blob(mergedData, { type: 'application/zip' });
                 const finalName = outputName.endsWith('.zip') ? outputName : `${outputName}.zip`;
+                
+                // 自动下载合并后的文件
                 saveAs(blob, finalName);
                 
                 // 完成处理
@@ -747,7 +766,7 @@
                 const elapsedTime = (endTime - startTime) / 1000;
                 
                 updateMergeProgress(100);
-                document.getElementById('merge-status').textContent = `文件合并完成: ${finalName}`;
+                document.getElementById('merge-status').textContent = `文件合并完成: ${finalName}，已自动下载`;
                 document.getElementById('merge-time').textContent = formatTime(elapsedTime);
                 
             } catch (error) {
