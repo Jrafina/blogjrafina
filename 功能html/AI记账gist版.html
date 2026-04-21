@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>💳 多卡AI记账 · 全自动Gist同步版</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #eceff5 0%, #e0e6f0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+            padding-bottom: 70px; /* 给底部导航留空间 */
+        }
+        .card {
+            max-width: 100%;
+            width: 100vw;
+            min-height: 100vh;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(14px);
+            border-radius: 0;
+            border: none;
+            padding: 1rem;
+            box-shadow: none;
+        }
+        /* 底部导航 */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e0e6f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #4f6e91;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        .nav-item.active {
+            color: #1e3b54;
+            background: #eaf1fb;
+        }
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        /* 功能面板 - 默认只显示记账面板 */
+        .function-panel {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.2s ease;
+        }
+        .function-panel.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 核心记账面板样式强化 */
+        #inputPanel {
+            display: block;
+            margin-top: 15vh;
+        }
+        /* 新增：顶部同步状态样式 */
+        .top-sync-status {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+        .input-panel-mobile {
+            background: #ffffffc9;
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            border: 1px solid #ffffff;
+            box-shadow: 0 8px 24px -12px rgba(10,30,50,0.2);
+        }
+        .input-row-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .text-input-mobile {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #dbe0e8;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            background: white;
+            transition: 0.2s;
+        }
+        .text-input-mobile:focus {
+            outline: none;
+            border-color: #5f7b9c;
+            box-shadow: 0 0 0 3px rgba(95,123,156,0.25);
+        }
+        .button-group-mobile {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-mobile {
+            flex: 1;
+            padding: 14px 0;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            background: white;
+            color: #1e2b39;
+            border: 1px solid #cad1db;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary-mobile {
+            background: #1e2f40;
+            color: white;
+            border: none;
+            box-shadow: 0 8px 14px -8px #1e2f4060;
+        }
+        .btn-primary-mobile:hover {
+            background: #2b3f55;
+            transform: scale(1.02);
+        }
+        .btn-outline-mobile {
+            background: #ffffffdd;
+        }
+        .btn-outline-mobile:hover {
+            background: white;
+            border-color: #9bafc4;
+        }
+
+        /* 原有样式适配调整 */
+        .cards-panel { 
+            background: #ffffffd1; 
+            backdrop-filter: blur(4px); 
+            border-radius: 28px; 
+            padding: 1.5rem; 
+            margin-bottom: 1rem; 
+            border: 1px solid #ffffff; 
+            box-shadow: 0 8px 18px -10px #3a4e66; 
+        }
+        .cards-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            margin-bottom: 1.2rem; 
+        }
+        .cards-header h3 { 
+            font-weight: 600; 
+            color: #1e3b54; 
+            font-size: 1.2rem; 
+        }
+        .btn-add-card { 
+            background: #1e2f40; 
+            color: white; 
+            border: none; 
+            border-radius: 40px; 
+            padding: 10px 22px; 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px -4px #1e2f4080; 
+            transition: 0.15s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
+        .btn-add-card:hover { 
+            background: #2b4058; 
+            transform: scale(1.02); 
+        }
+        .cards-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 16px; 
+            margin-top: 10px; 
+        }
+        .card-item { 
+            background: #f5faff; 
+            border-radius: 24px; 
+            padding: 1.2rem; 
+            border: 1px solid #cddef1; 
+            box-shadow: 0 6px 12px -8px #2c405a; 
+            flex: 1 1 100%; 
+        }
+        .card-item .card-name { 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            color: #1f3f5c; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            margin-bottom: 10px; 
+        }
+        .card-item .balance-big { 
+            font-size: 1.7rem; 
+            font-weight: 700; 
+            color: #0b3f5c; 
+            margin: 8px 0 12px; 
+            letter-spacing: -0.5px; 
+        }
+        .initial-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+            margin-bottom: 6px; 
+        }
+        .initial-row label { 
+            font-size: 0.8rem; 
+            color: #4f6b89; 
+        }
+        .initial-row input { 
+            width: 90px; 
+            padding: 6px 8px; 
+            border: 1px solid #b3c9df; 
+            border-radius: 30px; 
+            background: white; 
+            font-size: 0.9rem; 
+        }
+        .btn-set-init { 
+            background: #e3eefb; 
+            border: none; 
+            border-radius: 30px; 
+            padding: 5px 15px; 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+            color: #1f4870; 
+            cursor: pointer; 
+        }
+        .btn-remove-card { 
+            background: #ffeae8; 
+            border: none; 
+            border-radius: 30px; 
+            padding: 5px 15px; 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+            color: #b15555; 
+            cursor: pointer; 
+            margin-top: 8px; 
+        }
+        .btn-remove-card:disabled { 
+            opacity: 0.3; 
+            cursor: not-allowed; 
+        }
+
+        .gist-sync-panel {
+            background: #ffffffc9;
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ffffff;
+        }
+        .reset-btn {
+            background: #ffeaea;
+            border: 1px solid #ffbcbc;
+            border-radius: 30px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            color: #d65555;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .table-header-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 10px;
+        }
+        .expand-btn {
+            background: #e3eefb;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1f4870;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .table-wrapper { 
+            background: #ffffffd6; 
+            backdrop-filter: blur(4px); 
+            border-radius: 24px; 
+            padding: 0.2rem; 
+            border: 1px solid #ffffff; 
+            overflow-x: auto; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.93rem; 
+            min-width: 100%; 
+        }
+        th { 
+            text-align: left; 
+            padding: 1rem 1rem 0.8rem 1rem; 
+            font-weight: 600; 
+            color: #2b4055; 
+            border-bottom: 2px solid #cfddee; 
+            font-size: 0.85rem;
+        }
+        td { 
+            padding: 0.8rem 1rem; 
+            border-bottom: 1px solid #e6ecf3; 
+            color: #1e2d3c; 
+            vertical-align: middle; 
+            font-size: 0.85rem;
+        }
+        .badge-category { 
+            background: #e3eefb; 
+            padding: 4px 12px; 
+            border-radius: 40px; 
+            font-size: 0.8rem; 
+            font-weight: 500; 
+            color: #1f4870; 
+            display: inline-block; 
+        }
+        .badge-income { 
+            background: #dff0d8; 
+            color: #2a6b2a; 
+            padding: 4px 12px; 
+            border-radius: 40px; 
+            font-weight: 600; 
+            display: inline-block; 
+        }
+        .badge-expense { 
+            background: #ffe6e2; 
+            color: #b13e3e; 
+            padding: 4px 12px; 
+            border-radius: 40px; 
+            font-weight: 600; 
+            display: inline-block; 
+        }
+        .amount-number { 
+            font-weight: 600; 
+            color: #0f2b3f; 
+        }
+        select.card-select-sm { 
+            background: white; 
+            border: 1px solid #bfd2e8; 
+            border-radius: 30px; 
+            padding: 5px 8px; 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            max-width: 100px; 
+        }
+        input.date-input { 
+            border: 1px solid #bfd2e8; 
+            border-radius: 30px; 
+            padding: 5px 10px; 
+            font-size: 0.8rem; 
+            width: 120px; 
+            background: white; 
+        }
+        .action-btns { 
+            display: flex; 
+            gap: 6px; 
+            flex-wrap: wrap; 
+        }
+        .action-btn { 
+            background: white; 
+            border: 1px solid #d0ddee; 
+            border-radius: 30px; 
+            padding: 5px 10px; 
+            font-size: 0.7rem; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: 0.1s; 
+        }
+        .action-btn.toggle-type:hover { 
+            background: #e3effa; 
+            border-color: #6f92b9; 
+        }
+        .action-btn.delete-btn:hover { 
+            background: #fbeae9; 
+            border-color: #c87a7a; 
+            color: #aa3c3c; 
+        }
+        .empty-row td { 
+            text-align: center; 
+            color: #8091aa; 
+            font-style: italic; 
+            padding: 2.5rem; 
+            background: #fafdff; 
+        }
+        .footer-note { 
+            margin-top: 1.2rem; 
+            font-size: 0.85rem; 
+            color: #57708c; 
+            display: flex; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        .tag { 
+            background: #e9f0fa; 
+            padding: 5px 15px; 
+            border-radius: 30px; 
+            color: #304e74; 
+            font-size: 0.8rem;
+        }
+        .import-export { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        .file-input-hidden { 
+            display: none; 
+        }
+
+        .stats-panel {
+            background: #ffffffec;
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 1.5rem;
+            border: 1px solid #ffffff;
+            box-shadow: 0 12px 28px -12px #243b50;
+        }
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .stats-header h3 {
+            font-size: 1.3rem;
+            color: #1e3b54;
+        }
+        .month-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f0f6fe;
+            border-radius: 40px;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+        }
+        .month-selector button {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 6px #bacde0;
+            line-height: 1;
+        }
+        .month-selector span {
+            font-weight: 600;
+            color: #1f4a7a;
+        }
+        .summary-numbers {
+            display: flex;
+            justify-content: space-between;
+            background: #eaf1fb;
+            border-radius: 28px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+        .summary-item .label {
+            font-size: 0.75rem;
+            color: #4f6e91;
+        }
+        .summary-item .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .income-value { color: #2e7d32; }
+        .expense-value { color: #c44536; }
+        .avg-value { color: #1f4a7a; }
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        /* 响应式适配 */
+        @media screen and (min-width: 701px) {
+            .card {
+                max-width: 800px;
+                margin: 20px auto;
+                border-radius: 36px;
+                padding: 2rem;
+                box-shadow: 0 20px 40px -14px rgba(10,30,50,0.3);
+            }
+            .mobile-nav {
+                display: none;
+            }
+            body {
+                padding-bottom: 0;
+                align-items: center;
+            }
+            #inputPanel {
+                margin-top: 0;
+            }
+            .function-panel {
+                display: block;
+                margin-bottom: 1rem;
+            }
+            .top-sync-status {
+                margin-bottom: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <!-- 核心记账面板（默认显示） -->
+    <div id="inputPanel" class="function-panel active">
+        <!-- 🔥 同步状态移到这里：输入框正上方 -->
+        <div id="gistStatus" class="top-sync-status">🤖 等待Token输入，自动同步</div>
+        
+        <div class="input-panel-mobile">
+            <div class="input-row-mobile">
+                <input type="text" id="textInput" class="text-input-mobile" placeholder="例：招商银行信用卡买早餐25元" autofocus>
+                <div class="button-group-mobile">
+                    <button class="btn-mobile btn-primary-mobile" id="addBtn">✨ AI解析并记账</button>
+                    <button class="btn-mobile btn-outline-mobile" id="sampleBtn">📌 示例</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 银行卡面板 -->
+    <div id="cardsPanel" class="function-panel">
+        <div class="cards-panel">
+            <div class="cards-header">
+                <h3>📋 我的银行卡</h3>
+                <button class="btn-add-card" id="addCardBtn">➕ 添加新银行卡</button>
+            </div>
+            <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+    </div>
+
+    <!-- 记账记录面板 -->
+    <div id="recordsPanel" class="function-panel">
+        <div class="table-header-toolbar">
+            <span>📋 记账明细 (最新在前)</span>
+            <button class="expand-btn" id="expandRecordsBtn">🔽 显示最近5条</button>
+        </div>
+        <div class="table-wrapper">
+            <table id="recordTable">
+                <thead>
+                <tr><th>#</th><th>原始描述</th><th>金额(¥)</th><th>收支</th><th>类别</th><th>银行卡</th><th>日期</th><th>操作</th></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <div class="footer-note">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="tag">☁️ 全自动Gist同步</span>
+                <span class="tag">💾 本地+云端双存储</span>
+                <span class="tag">🤖 AI智能识别</span>
+            </div>
+            <button class="btn-mobile btn-outline-mobile" style="padding: 6px 16px; font-size: 0.8rem;" id="clearBtn">🗑️ 清空表格</button>
+        </div>
+    </div>
+
+    <!-- 统计面板 -->
+    <div id="statsPanel" class="function-panel">
+        <div class="stats-panel">
+            <div class="stats-header">
+                <h3>📅 月度统计</h3>
+            </div>
+            <div class="month-selector">
+                <button id="prevMonthBtn">←</button>
+                <span id="currentYearMonth">2025-03</span>
+                <button id="nextMonthBtn">→</button>
+            </div>
+            <div class="summary-numbers">
+                <div class="summary-item">
+                    <div class="label">总收入</div>
+                    <div class="value income-value" id="totalIncome">¥0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">总支出</div>
+                    <div class="value expense-value" id="totalExpense">¥0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">日均支出</div>
+                    <div class="value avg-value" id="avgExpense">¥0</div>
+                </div>
+            </div>
+            <div class="chart-container"><canvas id="dailyChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- 同步面板（仅保留Token输入，无状态显示） -->
+    <div id="syncPanel" class="function-panel">
+        <div class="gist-sync-panel">
+            <div class="input-row-mobile">
+                <label for="githubToken" style="font-size: 1rem; color: #1e3b54; margin-bottom: 8px;">🔑 GitHub Token：</label>
+                <input type="text" id="githubToken" class="text-input-mobile" placeholder="输入ghp_开头的Token，自动同步">
+                <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center;">
+                    <button class="reset-btn" id="resetSyncBtn">🔄 重置同步</button>
+                    <div style="font-size: 0.8rem; color: #57708c; margin-top: 4px;">
+                        ✅ 输入Token → 自动加载云端数据 | ✅ 记账/修改 → 自动上传云端
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="mobile-nav">
+        <div class="nav-item active" data-panel="inputPanel">
+            <div class="nav-icon">✏️</div>
+            <div>记账</div>
+        </div>
+        <div class="nav-item" data-panel="cardsPanel">
+            <div class="nav-icon">💳</div>
+            <div>银行卡</div>
+        </div>
+        <div class="nav-item" data-panel="recordsPanel">
+            <div class="nav-icon">📜</div>
+            <div>记录</div>
+        </div>
+        <div class="nav-item" data-panel="statsPanel">
+            <div class="nav-icon">📊</div>
+            <div>统计</div>
+        </div>
+        <div class="nav-item" data-panel="syncPanel">
+            <div class="nav-icon">☁️</div>
+            <div>同步</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 全局数据存储
+    let appData = {
+        cards: [], // 银行卡列表 [{id, name, initialBalance, balance}]
+        records: [], // 记账记录 [{id, desc, amount, type, category, card, date}]
+        githubToken: localStorage.getItem('githubToken') || '',
+        gistId: localStorage.getItem('gistId') || '',
+        showRecordCount: 5, // 默认显示5条记录
+        currentMonth: new Date().getMonth(),
+        currentYear: new Date().getFullYear()
+    };
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 加载本地存储数据
+        loadLocalData();
+        // 渲染银行卡
+        renderCards();
+        // 渲染记账记录
+        renderRecords();
+        // 初始化统计
+        initStats();
+        // 绑定事件
+        bindEvents();
+        // 加载Token
+        document.getElementById('githubToken').value = appData.githubToken;
+        // 更新同步状态
+        updateSyncStatus();
+    });
+
+    // 加载本地存储数据
+    function loadLocalData() {
+        const savedCards = localStorage.getItem('cards');
+        const savedRecords = localStorage.getItem('records');
+        if (savedCards) appData.cards = JSON.parse(savedCards);
+        if (savedRecords) appData.records = JSON.parse(savedRecords);
+    }
+
+    // 保存数据到本地存储
+    function saveLocalData() {
+        localStorage.setItem('cards', JSON.stringify(appData.cards));
+        localStorage.setItem('records', JSON.stringify(appData.records));
+        localStorage.setItem('githubToken', appData.githubToken);
+        if (appData.gistId) localStorage.setItem('gistId', appData.gistId);
+    }
+
+    // 更新同步状态
+    function updateSyncStatus() {
+        const statusEl = document.getElementById('gistStatus');
+        if (!appData.githubToken) {
+            statusEl.textContent = '🤖 等待Token输入，自动同步';
+            statusEl.style.color = '#4f6e91';
+        } else {
+            statusEl.textContent = '☁️ 已连接云端，自动同步中';
+            statusEl.style.color = '#2a6b2a';
+        }
+    }
+
+    // 绑定所有事件
+    function bindEvents() {
+        // 底部导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有active
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll('.function-panel').forEach(panel => panel.classList.remove('active'));
+                // 添加当前active
+                this.classList.add('active');
+                const panelId = this.dataset.panel;
+                document.getElementById(panelId).classList.add('active');
+                
+                // 桌面端适配：非移动端时强制显示所有面板，仅移动端切换
+                if (window.innerWidth <= 700) {
+                    document.querySelectorAll('.function-panel').forEach(panel => {
+                        panel.style.display = panel.id === panelId ? 'block' : 'none';
+                    });
+                }
+            });
+        });
+
+        // 添加银行卡
+        document.getElementById('addCardBtn').addEventListener('click', addNewCard);
+
+        // AI解析并记账
+        document.getElementById('addBtn').addEventListener('click', aiParseAndAddRecord);
+
+        // 示例按钮
+        document.getElementById('sampleBtn').addEventListener('click', function() {
+            document.getElementById('textInput').value = '招商银行信用卡买早餐25元';
+        });
+
+        // 清空记录
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (confirm('确定清空所有记账记录吗？')) {
+                appData.records = [];
+                saveLocalData();
+                renderRecords();
+                syncToGist(); // 同步到云端
+                initStats(); // 重新计算统计
+            }
+        });
+
+        // 展开/收起记录
+        document.getElementById('expandRecordsBtn').addEventListener('click', function() {
+            if (appData.showRecordCount === 5) {
+                appData.showRecordCount = appData.records.length;
+                this.textContent = '🔼 收起至5条';
+            } else {
+                appData.showRecordCount = 5;
+                this.textContent = '🔽 显示最近5条';
+            }
+            renderRecords();
+        });
+
+        // Token输入事件
+        document.getElementById('githubToken').addEventListener('blur', function() {
+            appData.githubToken = this.value.trim();
+            saveLocalData();
+            updateSyncStatus();
+            syncFromGist(); // 加载云端数据
+        });
+
+        // 重置同步
+        document.getElementById('resetSyncBtn').addEventListener('click', function() {
+            if (confirm('确定重置同步状态吗？会清空Gist关联ID，保留本地数据')) {
+                appData.gistId = '';
+                localStorage.removeItem('gistId');
+                updateSyncStatus();
+                alert('同步状态已重置');
+            }
+        });
+
+        // 月份切换
+        document.getElementById('prevMonthBtn').addEventListener('click', function() {
+            appData.currentMonth--;
+            if (appData.currentMonth < 0) {
+                appData.currentMonth = 11;
+                appData.currentYear--;
+            }
+            updateMonthDisplay();
+            initStats();
+        });
+
+        document.getElementById('nextMonthBtn').addEventListener('click', function() {
+            appData.currentMonth++;
+            if (appData.currentMonth > 11) {
+                appData.currentMonth = 0;
+                appData.currentYear++;
+            }
+            updateMonthDisplay();
+            initStats();
+        });
+    }
+
+    // 更新月份显示
+    function updateMonthDisplay() {
+        const monthStr = (appData.currentMonth + 1).toString().padStart(2, '0');
+        document.getElementById('currentYearMonth').textContent = `${appData.currentYear}-${monthStr}`;
+    }
+
+    // 添加新银行卡
+    function addNewCard() {
+        const cardName = prompt('请输入银行卡名称（例：招商银行信用卡）：');
+        if (!cardName || cardName.trim() === '') return;
+        
+        const newCard = {
+            id: Date.now().toString(),
+            name: cardName.trim(),
+            initialBalance: 0,
+            balance: 0
+        };
+        
+        appData.cards.push(newCard);
+        saveLocalData();
+        renderCards();
+        syncToGist(); // 同步到云端
+    }
+
+    // 渲染银行卡列表
+    function renderCards() {
+        const cardsGrid = document.getElementById('cardsGrid');
+        if (appData.cards.length === 0) {
+            cardsGrid.innerHTML = '<div style="text-align:center; padding:2rem; color:#8091aa;">暂无银行卡，点击"+ 添加新银行卡"创建</div>';
+            return;
+        }
+
+        cardsGrid.innerHTML = '';
+        appData.cards.forEach(card => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card-item';
+            cardEl.innerHTML = `
+                <div class="card-name">💳 ${card.name}</div>
+                <div class="balance-big">¥${card.balance.toFixed(2)}</div>
+                <div class="initial-row">
+                    <label>初始金额：</label>
+                    <input type="number" class="init-input" value="${card.initialBalance}" data-id="${card.id}">
+                    <button class="btn-set-init" data-id="${card.id}">设置</button>
+                </div>
+                <button class="btn-remove-card" data-id="${card.id}">删除银行卡</button>
+            `;
+            cardsGrid.appendChild(cardEl);
+
+            // 设置初始金额事件
+            cardEl.querySelector('.btn-set-init').addEventListener('click', function() {
+                const input = cardEl.querySelector('.init-input');
+                const initBalance = parseFloat(input.value) || 0;
+                card.initialBalance = initBalance;
+                card.balance = initBalance;
+                // 更新所有关联记录的余额（简化版）
+                appData.records.forEach(record => {
+                    if (record.card === card.name) {
+                        card.balance = record.type === 'income' 
+                            ? card.balance + parseFloat(record.amount) 
+                            : card.balance - parseFloat(record.amount);
+                    }
+                });
+                saveLocalData();
+                renderCards();
+                syncToGist(); // 同步到云端
+            });
+
+            // 删除银行卡事件
+            cardEl.querySelector('.btn-remove-card').addEventListener('click', function() {
+                if (confirm(`确定删除"${card.name}"吗？`)) {
+                    appData.cards = appData.cards.filter(c => c.id !== card.id);
+                    saveLocalData();
+                    renderCards();
+                    syncToGist(); // 同步到云端
+                }
+            });
+        });
+    }
+
+    // AI解析记账文本（模拟解析）
+    function aiParseAndAddRecord() {
+        const inputText = document.getElementById('textInput').value.trim();
+        if (!inputText) {
+            alert('请输入记账描述（例：招商银行信用卡买早餐25元）');
+            return;
+        }
+
+        // 模拟AI解析逻辑
+        // 1. 提取金额
+        const amountMatch = inputText.match(/(\d+\.?\d*)元/);
+        const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
+        if (amount <= 0) {
+            alert('未识别到有效金额，请包含数字+元（例：25元）');
+            return;
+        }
+
+        // 2. 提取银行卡（匹配已存在的银行卡名称）
+        let cardName = '默认银行卡';
+        appData.cards.forEach(card => {
+            if (inputText.includes(card.name)) {
+                cardName = card.name;
+            }
+        });
+        if (appData.cards.length === 0) {
+            alert('暂无银行卡，请先添加银行卡再记账');
+            return;
+        }
+
+        // 3. 提取收支类型（默认支出，包含"收入/进/赚"则为收入）
+        const type = inputText.includes('收入') || inputText.includes('进') || inputText.includes('赚') 
+            ? 'income' 
+            : 'expense';
+
+        // 4. 提取类别（简单匹配）
+        let category = '其他';
+        if (inputText.includes('早餐') || inputText.includes('午餐') || inputText.includes('晚餐') || inputText.includes('外卖')) category = '餐饮';
+        if (inputText.includes('交通') || inputText.includes('打车') || inputText.includes('公交') || inputText.includes('地铁')) category = '交通';
+        if (inputText.includes('购物') || inputText.includes('超市') || inputText.includes('淘宝')) category = '购物';
+        if (inputText.includes('工资') || inputText.includes('奖金')) category = '工资';
+        if (inputText.includes('房租') || inputText.includes('水电')) category = '生活缴费';
+
+        // 创建记录
+        const newRecord = {
+            id: Date.now().toString(),
+            desc: inputText,
+            amount: amount.toFixed(2),
+            type: type,
+            category: category,
+            card: cardName,
+            date: new Date().toISOString().split('T')[0] // YYYY-MM-DD
+        };
+
+        // 更新银行卡余额
+        const card = appData.cards.find(c => c.name === cardName);
+        if (card) {
+            card.balance = type === 'income' 
+                ? card.balance + amount 
+                : card.balance - amount;
+        }
+
+        // 添加记录
+        appData.records.unshift(newRecord); // 最新的在前面
+        saveLocalData();
+        renderRecords();
+        renderCards(); // 更新银行卡余额
+        initStats(); // 更新统计
+        syncToGist(); // 同步到云端
+
+        // 清空输入框
+        document.getElementById('textInput').value = '';
+        alert('记账成功！');
+    }
+
+    // 渲染记账记录表格
+    function renderRecords() {
+        const tableBody = document.getElementById('tableBody');
+        if (appData.records.length === 0) {
+            tableBody.innerHTML = '<tr class="empty-row"><td colspan="8">暂无记账记录，开始添加第一条吧～</td></tr>';
+            return;
+        }
+
+        // 截取显示的记录数
+        const displayRecords = appData.records.slice(0, appData.showRecordCount);
+        
+        tableBody.innerHTML = '';
+        displayRecords.forEach((record, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${record.desc}</td>
+                <td class="amount-number">${record.amount}</td>
+                <td>${record.type === 'income' 
+                    ? '<span class="badge-income">收入</span>' 
+                    : '<span class="badge-expense">支出</span>'}</td>
+                <td><span class="badge-category">${record.category}</span></td>
+                <td>
+                    <select class="card-select-sm" data-id="${record.id}">
+                        ${appData.cards.map(card => `
+                            <option value="${card.name}" ${record.card === card.name ? 'selected' : ''}>${card.name}</option>
+                        `).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="date" class="date-input" value="${record.date}" data-id="${record.id}">
+                </td>
+                <td class="action-btns">
+                    <button class="action-btn toggle-type" data-id="${record.id}">
+                        ${record.type === 'income' ? '转为支出' : '转为收入'}
+                    </button>
+                    <button class="action-btn delete-btn" data-id="${record.id}">删除</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+
+            // 切换收支类型
+            tr.querySelector('.toggle-type').addEventListener('click', function() {
+                const recordId = this.dataset.id;
+                const record = appData.records.find(r => r.id === recordId);
+                if (record) {
+                    // 切换类型并更新余额
+                    const oldType = record.type;
+                    record.type = oldType === 'income' ? 'expense' : 'income';
+                    
+                    // 更新银行卡余额
+                    const card = appData.cards.find(c => c.name === record.card);
+                    if (card) {
+                        const amount = parseFloat(record.amount);
+                        card.balance = oldType === 'income' 
+                            ? card.balance - amount 
+                            : card.balance + amount;
+                    }
+
+                    saveLocalData();
+                    renderRecords();
+                    renderCards();
+                    initStats();
+                    syncToGist(); // 同步到云端
+                }
+            });
+
+            // 删除记录
+            tr.querySelector('.delete-btn').addEventListener('click', function() {
+                const recordId = this.dataset.id;
+                const record = appData.records.find(r => r.id === recordId);
+                if (confirm(`确定删除这条记录吗？`)) {
+                    // 恢复银行卡余额
+                    const card = appData.cards.find(c => c.name === record.card);
+                    if (card) {
+                        const amount = parseFloat(record.amount);
+                        card.balance = record.type === 'income' 
+                            ? card.balance - amount 
+                            : card.balance + amount;
+                    }
+
+                    appData.records = appData.records.filter(r => r.id !== recordId);
+                    saveLocalData();
+                    renderRecords();
+                    renderCards();
+                    initStats();
+                    syncToGist(); // 同步到云端
+                }
+            });
+
+            // 切换银行卡
+            tr.querySelector('.card-select-sm').addEventListener('change', function() {
+                const recordId = this.dataset.id;
+                const oldCardName = record.card;
+                const newCardName = this.value;
+                
+                // 找到记录
+                const record = appData.records.find(r => r.id === recordId);
+                if (!record) return;
+
+                // 恢复旧卡余额
+                const oldCard = appData.cards.find(c => c.name === oldCardName);
+                if (oldCard) {
+                    const amount = parseFloat(record.amount);
+                    oldCard.balance = record.type === 'income' 
+                        ? oldCard.balance - amount 
+                        : oldCard.balance + amount;
+                }
+
+                // 更新记录银行卡
+                record.card = newCardName;
+
+                // 更新新卡余额
+                const newCard = appData.cards.find(c => c.name === newCardName);
+                if (newCard) {
+                    const amount = parseFloat(record.amount);
+                    newCard.balance = record.type === 'income' 
+                        ? newCard.balance + amount 
+                        : newCard.balance - amount;
+                }
+
+                saveLocalData();
+                renderRecords();
+                renderCards();
+                syncToGist(); // 同步到云端
+            });
+
+            // 修改日期
+            tr.querySelector('.date-input').addEventListener('change', function() {
+                const recordId = this.dataset.id;
+                const record = appData.records.find(r => r.id === recordId);
+                record.date = this.value;
+                saveLocalData();
+                initStats(); // 重新计算统计
+                syncToGist(); // 同步到云端
+            });
+        });
+    }
+
+    // 初始化统计
+    function initStats() {
+        // 筛选当月记录
+        const monthStr = (appData.currentMonth + 1).toString().padStart(2, '0');
+        const yearMonth = `${appData.currentYear}-${monthStr}`;
+        const monthRecords = appData.records.filter(record => 
+            record.date.startsWith(yearMonth)
+        );
+
+        // 计算总收入、总支出
+        let totalIncome = 0;
+        let totalExpense = 0;
+        monthRecords.forEach(record => {
+            const amount = parseFloat(record.amount);
+            if (record.type === 'income') {
+                totalIncome += amount;
+            } else {
+                totalExpense += amount;
+            }
+        });
+
+        // 计算日均支出
+        const daysInMonth = new Date(appData.currentYear, appData.currentMonth + 1, 0).getDate();
+        const avgExpense = totalExpense / daysInMonth;
+
+        // 更新显示
+        document.getElementById('totalIncome').textContent = `¥${totalIncome.toFixed(2)}`;
+        document.getElementById('totalExpense').textContent = `¥${totalExpense.toFixed(2)}`;
+        document.getElementById('avgExpense').textContent = `¥${avgExpense.toFixed(2)}`;
+
+        // 渲染每日支出图表
+        renderDailyChart(monthRecords, daysInMonth);
+    }
+
+    // 渲染每日支出图表
+    function renderDailyChart(monthRecords, daysInMonth) {
+        // 初始化每日支出数据
+        const dailyExpense = Array(daysInMonth).fill(0);
+        
+        // 填充每日支出
+        monthRecords.forEach(record => {
+            if (record.type === 'expense') {
+                const day = parseInt(record.date.split('-')[2]);
+                dailyExpense[day - 1] += parseFloat(record.amount);
+            }
+        });
+
+        // 销毁旧图表
+        const canvas = document.getElementById('dailyChart');
+        const ctx = canvas.getContext('2d');
+        if (window.dailyChartInstance) {
+            window.dailyChartInstance.destroy();
+        }
+
+        // 创建新图表
+        window.dailyChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: daysInMonth}, (_, i) => `${i+1}日`),
+                datasets: [{
+                    label: '每日支出(¥)',
+                    data: dailyExpense,
+                    backgroundColor: 'rgba(95,123,156,0.6)',
+                    borderColor: 'rgba(95,123,156,1)',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30,47,64,0.9)',
+                        padding: 12,
+                        borderRadius: 8,
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(207,221,238,0.5)'
+                        },
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#4f6e91'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#4f6e91'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 同步到Gist（模拟+基础API对接）
+    async function syncToGist() {
+        if (!appData.githubToken) return;
+
+        const statusEl = document.getElementById('gistStatus');
+        statusEl.textContent = '☁️ 正在同步到云端...';
+        statusEl.style.color = '#1f4a7a';
+
+        try {
+            const gistData = {
+                description: '多卡AI记账数据',
+                public: false,
+                files: {
+                    'account_book.json': {
+                        content: JSON.stringify({
+                            cards: appData.cards,
+                            records: appData.records
+                        }, null, 2)
+                    }
+                }
+            };
+
+            let response;
+            // 有Gist ID则更新，无则创建
+            if (appData.gistId) {
+                response = await fetch(`https://api.github.com/gists/${appData.gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${appData.githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(gistData)
+                });
+            } else {
+                response = await fetch('https://api.github.com/gists', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${appData.githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(gistData)
+                });
+                const data = await response.json();
+                appData.gistId = data.id;
+                localStorage.setItem('gistId', data.id);
+            }
+
+            if (response.ok) {
+                statusEl.textContent = '☁️ 云端同步成功';
+                statusEl.style.color = '#2a6b2a';
+            } else {
+                throw new Error('同步失败');
+            }
+        } catch (e) {
+            statusEl.textContent = '❌ 云端同步失败，请检查Token';
+            statusEl.style.color = '#b13e3e';
+            console.error('Gist同步失败:', e);
+        }
+    }
+
+    // 从Gist同步数据
+    async function syncFromGist() {
+        if (!appData.githubToken) return;
+
+        const statusEl = document.getElementById('gistStatus');
+        statusEl.textContent = '☁️ 正在加载云端数据...';
+        statusEl.style.color = '#1f4a7a';
+
+        try {
+            // 如果有Gist ID，加载数据
+            if (appData.gistId) {
+                const response = await fetch(`https://api.github.com/gists/${appData.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${appData.githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = data.files['account_book.json'].content;
+                    const cloudData = JSON.parse(content);
+                    
+                    // 合并数据（云端覆盖本地）
+                    appData.cards = cloudData.cards || [];
+                    appData.records = cloudData.records || [];
+                    
+                    saveLocalData();
+                    renderCards();
+                    renderRecords();
+                    initStats();
+                    
+                    statusEl.textContent = '☁️ 云端数据加载成功';
+                    statusEl.style.color = '#2a6b2a';
+                } else {
+                    throw new Error('加载失败');
+                }
+            } else {
+                // 无Gist ID，检查是否有同名Gist
+                const response = await fetch('https://api.github.com/gists', {
+                    headers: {
+                        'Authorization': `token ${appData.githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const gists = await response.json();
+                    const targetGist = gists.find(gist => gist.description === '多卡AI记账数据');
+                    if (targetGist) {
+                        appData.gistId = targetGist.id;
+                        localStorage.setItem('gistId', targetGist.id);
+                        syncFromGist(); // 重新加载
+                    } else {
+                        // 无同名Gist，首次同步
+                        syncToGist();
+                    }
+                }
+            }
+        } catch (e) {
+            statusEl.textContent = '❌ 云端数据加载失败，请检查Token';
+            statusEl.style.color = '#b13e3e';
+            console.error('Gist加载失败:', e);
+        }
+    }
+</script>
+</body>
+</html>

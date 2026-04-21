@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核心.html 加密工具</title>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .desc {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px dashed #aaa;
+            border-radius: 16px;
+            width: 100%;
+            cursor: pointer;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        button:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+        .info {
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 25px;
+            font-size: 14px;
+            text-align: left;
+        }
+        .success {
+            color: #2c7a4d;
+            background: #e6f9ed;
+            padding: 10px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .error {
+            color: #c53030;
+            background: #fff5f5;
+            padding: 10px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 加密「核心.html」</h1>
+    <div class="desc">选择一个 HTML 文件，将生成 <strong>解锁页面 + 密钥文件</strong><br>只有拥有正确密钥文件的人才能解锁内容。</div>
+
+    <input type="file" id="fileInput" accept=".html,.htm">
+    <br>
+    <button id="encryptBtn">✨ 开始加密并生成文件</button>
+
+    <div id="resultArea"></div>
+    <div class="info">
+        📌 说明：<br>
+        1. 请选择「核心.html」（或任何你想保护的 HTML 文件）。<br>
+        2. 点击按钮后会自动下载两个文件：<br>
+        &nbsp;&nbsp;• <strong>unlock.html</strong> – 解锁页面（需要上传密钥文件）<br>
+        &nbsp;&nbsp;• <strong>secret.key</strong> – AES‑256 密钥文件（请勿丢失）<br>
+        3. 打开 unlock.html，上传 secret.key 即可看到原始页面内容。
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const encryptBtn = document.getElementById('encryptBtn');
+    const resultArea = document.getElementById('resultArea');
+
+    // 计算文件的 SHA-256 哈希
+    async function computeSHA256(file) {
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // 生成随机字节并转为 Hex 字符串
+    function randomHex(bytesLength) {
+        const words = CryptoJS.lib.WordArray.random(bytesLength);
+        return CryptoJS.enc.Hex.stringify(words);
+    }
+
+    // AES-256-CBC 加密 (明文, 密钥Hex, IV Hex)
+    function encryptAES256(plainText, keyHex, ivHex) {
+        const key = CryptoJS.enc.Hex.parse(keyHex);
+        const iv = CryptoJS.enc.Hex.parse(ivHex);
+        const encrypted = CryptoJS.AES.encrypt(plainText, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return encrypted.toString();  // Base64 密文
+    }
+
+    // 生成解锁页面的完整 HTML 代码
+    function buildUnlockPage(cipherBase64, ivHex, targetFileHash) {
+        return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件密钥解锁 · 核心页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"><\/script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .lock-box {
+            background: white;
+            border-radius: 32px;
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transition: 0.2s;
+        }
+        .lock-box h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .lock-box input {
+            margin: 20px 0;
+            padding: 10px;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 28px;
+        }
+        .lock-box button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .tip {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #e53e3e;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+<div id="unlockUI" class="lock-box">
+    <h2>🔑 上传密钥文件解锁</h2>
+    <p>只有持有正确 secret.key 的人才能查看内容</p>
+    <input type="file" id="keyFileInput" accept="*">
+    <br>
+    <button id="unlockBtn">验证并解锁</button>
+    <div id="tip" class="tip"></div>
+    <footer>🔐 AES-256 加密 · 哈希校验</footer>
+</div>
+
+<script>
+    const CIPHER_TEXT = "${cipherBase64}";
+    const IV = CryptoJS.enc.Hex.parse("${ivHex}");
+    const TARGET_FILE_HASH = "${targetFileHash}";
+
+    async function getFileHash(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    document.getElementById('unlockBtn').onclick = async () => {
+        const fileInput = document.getElementById('keyFileInput');
+        const tipDiv = document.getElementById('tip');
+        if (!fileInput.files[0]) {
+            tipDiv.textContent = "请选择密钥文件！";
+            return;
+        }
+        try {
+            const fileHash = await getFileHash(fileInput.files[0]);
+            if (fileHash !== TARGET_FILE_HASH) {
+                tipDiv.textContent = "❌ 密钥文件错误，验证失败！";
+                return;
+            }
+            const fileContent = await fileInput.files[0].text();
+            const KEY = CryptoJS.enc.Hex.parse(fileContent.trim());
+            const decrypted = CryptoJS.AES.decrypt(CIPHER_TEXT, KEY, {
+                iv: IV,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            const result = decrypted.toString(CryptoJS.enc.Utf8);
+            if (!result) throw new Error("解密失败");
+            document.open();
+            document.write(result);
+            document.close();
+        } catch(e) {
+            tipDiv.textContent = "❌ 解密失败，文件无效或损坏";
+            console.error(e);
+        }
+    };
+<\/script>
+</body>
+</html>`;
+    }
+
+    encryptBtn.addEventListener('click', async () => {
+        if (!fileInput.files[0]) {
+            resultArea.innerHTML = '<div class="error">⚠️ 请先选择「核心.html」文件！</div>';
+            return;
+        }
+        const file = fileInput.files[0];
+        resultArea.innerHTML = '<div class="info">⏳ 正在加密，请稍候...</div>';
+
+        try {
+            // 1. 读取原始 HTML 内容
+            const originalHtml = await file.text();
+
+            // 2. 生成随机 AES 密钥（256位 = 32字节 = 64 hex）和随机 IV（128位 = 16字节 = 32 hex）
+            const keyHex = randomHex(32);     // 64 个十六进制字符
+            const ivHex = randomHex(16);      // 32 个十六进制字符
+
+            // 3. 加密内容
+            const cipherBase64 = encryptAES256(originalHtml, keyHex, ivHex);
+
+            // 4. 创建密钥文件内容（纯文本，hex 字符串）
+            const keyFileContent = keyHex;
+
+            // 5. 创建临时密钥文件对象用于计算哈希
+            const keyBlob = new Blob([keyFileContent], { type: 'text/plain' });
+            const keyFileForHash = new File([keyBlob], "secret.key", { type: 'text/plain' });
+            const targetHash = await computeSHA256(keyFileForHash);
+
+            // 6. 生成解锁页面 HTML
+            const unlockHtml = buildUnlockPage(cipherBase64, ivHex, targetHash);
+
+            // 7. 触发下载
+            const unlockBlob = new Blob([unlockHtml], { type: 'text/html' });
+            const keyBlobDownload = new Blob([keyFileContent], { type: 'text/plain' });
+
+            const unlockLink = document.createElement('a');
+            unlockLink.href = URL.createObjectURL(unlockBlob);
+            unlockLink.download = 'unlock.html';
+            unlockLink.click();
+
+            const keyLink = document.createElement('a');
+            keyLink.href = URL.createObjectURL(keyBlobDownload);
+            keyLink.download = 'secret.key';
+            keyLink.click();
+
+            URL.revokeObjectURL(unlockLink.href);
+            URL.revokeObjectURL(keyLink.href);
+
+            resultArea.innerHTML = `<div class="success">✅ 加密成功！文件已自动下载：<br>
+            📄 <strong>unlock.html</strong> （解锁页面）<br>
+            🔑 <strong>secret.key</strong> （密钥文件）<br><br>
+            🧪 使用方式：打开 unlock.html → 上传 secret.key → 自动显示原始页面内容。</div>`;
+        } catch (err) {
+            console.error(err);
+            resultArea.innerHTML = `<div class="error">❌ 加密失败：${err.message}</div>`;
+        }
+    });
+</script>
+</body>
+</html>
