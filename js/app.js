@@ -177,11 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initMouseEffects();
 });
 
-// ...（后面的鼠标特效代码保持不变）...
-    // 初始化所有鼠标特效
-    initMouseEffects();
-
-
 // 鼠标特效系统
 function initMouseEffects() {
     // 1. 粒子效果
