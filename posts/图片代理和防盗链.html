@@ -656,7 +656,7 @@ table tbody + tbody,
 }
 
 .mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-lines {
-  color: #282c34;
+  color: #1d57ca
 }
 
 .mathjax-block .md-mathblock-panel .md-rawblock-input .cm-s-inner .CodeMirror-gutters {
@@ -1238,26 +1238,8 @@ img {
 
 
 
-</style><title>图片代理及防盗链</title>
+</style><title></title>
 <style>
-    .copy-btn {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        z-index: 10;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #ccc;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    .copy-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-    </style><style>
     .copy-btn {
         position: absolute; top: 8px; right: 8px; z-index: 10;
         background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
@@ -1266,9 +1248,15 @@ img {
     }
     .copy-btn:hover { background: rgba(255,255,255,0.2); }
     </style><style>
+    /* 将正文容器右对齐，宽度不变 */
+    #write {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+    }
+
     #floating-toc {
         position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
-        z-index: 999; width: 220px; font-size: 0.85rem; color: #e8e8f0;
+        z-index: 999; width: 260px; font-size: 0.85rem; color: #e8e8f0;
         transition: all 0.3s ease;
     }
     #floating-toc .toc-toggle {
@@ -1293,12 +1281,17 @@ img {
     }
     #floating-toc .toc-body li {
         padding: 4px 0; cursor: pointer; transition: color 0.2s;
-        line-height: 1.4;
+        line-height: 1.4; list-style: none;
     }
     #floating-toc .toc-body li:hover { color: #8b7cf7; }
-    .toc-h1 { font-weight: 600; padding-left: 0; }
-    .toc-h2 { padding-left: 1em; }
-    .toc-h3 { padding-left: 2em; }
+    /* 嵌套缩进 */
+    #floating-toc .toc-body ul ul {
+        padding-left: 1.2em;
+    }
+    /* 不同层级字体微调 */
+    #floating-toc .toc-body li.toc-h1 { font-weight: 600; }
+    #floating-toc .toc-body li.toc-h2 { font-weight: normal; }
+    #floating-toc .toc-body li.toc-h3 { font-size: 0.9em; }
 
     /* 移动端隐藏目录 */
     @media (max-width: 900px) {
@@ -1306,15 +1299,15 @@ img {
     }
     </style><style>
     .article-signature {
-    text-align: center; /* 改为居中 */
-    color: #C3272B;
-    font-size: 1rem;
-    margin-top: 2.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    padding-top: 1rem;
-    font-style: italic;
-    font-weight: bold; /* 添加加粗 */
-}
+        text-align: center;
+        color: #C3272B;
+        font-size: 1rem;
+        margin-top: 2.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 1rem;
+        font-style: italic;
+        font-weight: bold;
+    }
     </style></head>
 <body class="typora-export os-windows">
 <div id="floating-toc">
@@ -1322,7 +1315,7 @@ img {
 <div class="toc-body" id="toc-body"></div>
 </div>
 <div class="typora-export-content">
-<div class="" id="write"><h1 id="图片代理及防盗链"><span>图片代理及防盗链</span></h1><h2 id="存储桶绑定"><span>存储桶绑定</span></h2><p><span>变量名必须是</span><code>MY_R2_BUCKET</code></p><h2 id="worker代码"><span>worker代码</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="js" spellcheck="false" style="break-inside: unset;"><button class="copy-btn" type="button">复制</button><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="js"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><span><span>​</span>x</span></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// ===================== 固定配置 =====================</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">const</span> <span class="cm-def">R2_BINDING</span> <span class="cm-operator">=</span> <span class="cm-string">"MY_R2_BUCKET"</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// 防盗链：允许通过 Referer 直接加载的域名</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">const</span> <span class="cm-def">ALLOWED_DOMAINS</span> <span class="cm-operator">=</span> [<span class="cm-string">"baidu.com"</span>];</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// ====================================================</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
+<div class="" id="write"><h1 id="图片代理和防盗链"><span>图片代理和防盗链</span></h1><h2 id="存储桶绑定"><span>存储桶绑定</span></h2><p><span>变量名必须是</span><code>MY_R2_BUCKET</code></p><h2 id="worker代码"><span>worker代码</span></h2><pre class="md-fences md-end-block ty-contain-cm modeLoaded" lang="js" spellcheck="false" style="break-inside: unset;"><button class="copy-btn" type="button">复制</button><div class="CodeMirror cm-s-inner cm-s-null-scroll CodeMirror-wrap" lang="js"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 13.425px; left: 4px;"><textarea autocapitalize="off" autocorrect="off" spellcheck="false" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><span><span>​</span>x</span></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// ===================== 固定配置 =====================</span></span></pre></div><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">const</span> <span class="cm-def">R2_BINDING</span> <span class="cm-operator">=</span> <span class="cm-string">"MY_R2_BUCKET"</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// 防盗链：允许通过 Referer 直接加载的域名</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">const</span> <span class="cm-def">ALLOWED_DOMAINS</span> <span class="cm-operator">=</span> [<span class="cm-string">"baidu.com"</span>];</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// ====================================================</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">export</span> <span class="cm-keyword">default</span> {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">  <span class="cm-property">async</span> <span class="cm-property">fetch</span>(<span class="cm-def">request</span>, <span class="cm-def">env</span>, <span class="cm-def">ctx</span>) {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">const</span> <span class="cm-def">url</span> <span class="cm-operator">=</span> <span class="cm-keyword">new</span> <span class="cm-variable">URL</span>(<span class="cm-variable-2">request</span>.<span class="cm-property">url</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">const</span> <span class="cm-def">path</span> <span class="cm-operator">=</span> <span class="cm-variable-2">url</span>.<span class="cm-property">pathname</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">const</span> <span class="cm-def">referer</span> <span class="cm-operator">=</span> <span class="cm-variable-2">request</span>.<span class="cm-property">headers</span>.<span class="cm-property">get</span>(<span class="cm-string">"Referer"</span>) <span class="cm-operator">||</span> <span class="cm-string">""</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-comment">// ---------- 处理预检请求（CORS） ----------</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">if</span> (<span class="cm-variable-2">request</span>.<span class="cm-property">method</span> <span class="cm-operator">===</span> <span class="cm-string">"OPTIONS"</span>) {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-atom">null</span>, {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">        <span class="cm-property">status</span>: <span class="cm-number">204</span>,</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">        <span class="cm-property">headers</span>: {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">          <span class="cm-string cm-property">"Access-Control-Allow-Origin"</span>: <span class="cm-string">"*"</span>,</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">          <span class="cm-string cm-property">"Access-Control-Allow-Methods"</span>: <span class="cm-string">"GET, OPTIONS"</span>,</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">          <span class="cm-string cm-property">"Access-Control-Allow-Headers"</span>: <span class="cm-string">"Content-Type"</span>,</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">          <span class="cm-string cm-property">"Access-Control-Max-Age"</span>: <span class="cm-string">"86400"</span>,</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">        },</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    }</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-comment">// ---------- 图片代理（防盗链） ----------</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">if</span> (<span class="cm-variable-2">path</span>.<span class="cm-property">includes</span>(<span class="cm-string">"drawingbed"</span>) <span class="cm-operator">||</span> <span class="cm-variable-2">path</span>.<span class="cm-property">includes</span>(<span class="cm-string">".png"</span>) <span class="cm-operator">||</span> <span class="cm-variable-2">path</span>.<span class="cm-property">includes</span>(<span class="cm-string">".jpg"</span>)) {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">const</span> <span class="cm-def">token</span> <span class="cm-operator">=</span> <span class="cm-variable-2">url</span>.<span class="cm-property">searchParams</span>.<span class="cm-property">get</span>(<span class="cm-string">"token"</span>) <span class="cm-operator">||</span> <span class="cm-string">""</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">const</span> <span class="cm-def">ACCESS_TOKEN</span> <span class="cm-operator">=</span> <span class="cm-variable-2">env</span>.<span class="cm-property">ACCESS_TOKEN</span> <span class="cm-operator">||</span> <span class="cm-string">""</span>;</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
@@ -1332,55 +1325,10 @@ img {
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">if</span> (<span class="cm-operator">!</span><span class="cm-variable-2">isAllowed</span>) {</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">        <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-string">"禁止访问"</span>, { <span class="cm-property">status</span>: <span class="cm-number">403</span> });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      }</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">const</span> <span class="cm-def">imgPath</span> <span class="cm-operator">=</span> <span class="cm-variable">decodeURIComponent</span>(<span class="cm-variable-2">path</span>.<span class="cm-property">slice</span>(<span class="cm-number">1</span>)).<span class="cm-property">normalize</span>(<span class="cm-string">'NFC'</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">const</span> <span class="cm-def">obj</span> <span class="cm-operator">=</span> <span class="cm-keyword">await</span> <span class="cm-variable-2">env</span>[<span class="cm-variable">R2_BINDING</span>].<span class="cm-property">get</span>(<span class="cm-variable-2">imgPath</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">if</span> (<span class="cm-operator">!</span><span class="cm-variable-2">obj</span>) <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-string">"图片不存在"</span>, { <span class="cm-property">status</span>: <span class="cm-number">404</span> });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
 </span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">const</span> <span class="cm-def">headers</span> <span class="cm-operator">=</span> <span class="cm-keyword">new</span> <span class="cm-variable">Headers</span>();</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-variable-2">obj</span>.<span class="cm-property">writeHttpMetadata</span>(<span class="cm-variable-2">headers</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-variable-2">headers</span>.<span class="cm-property">set</span>(<span class="cm-string">"Cache-Control"</span>, <span class="cm-string">"public, max-age=86400"</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-variable-2">headers</span>.<span class="cm-property">set</span>(<span class="cm-string">"Access-Control-Allow-Origin"</span>, <span class="cm-string">"*"</span>);</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">      <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-variable-2">obj</span>.<span class="cm-property">body</span>, { <span class="cm-property">headers</span> });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    }</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="" cm-zwsp="">
-</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-comment">// ---------- 其他请求 ----------</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-string">"请求无效"</span>, { <span class="cm-property">status</span>: <span class="cm-number">400</span> });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">  },</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">};</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 2067px;"></div><div class="CodeMirror-gutters" style="display: none; height: 2067px;"></div></div></div></pre><h2 id="变量设置"><span>变量设置</span></h2><p><code>ACCESS_TOKEN</code><span>: 用于验证图片</span></p><h2 id="访问"><span>访问</span></h2><p><span>假如我的worker域名为：</span><code>https://1795857.xyz</code><span>,某张图片的存储桶路径为：</span><code>bucket/1.jpg</code><span>,ACCESS_TOKEN： </span><code>my_ACCESS_TOKEN</code></p><ol><li><span>在</span><code>ALLOWED_DOMAINS</code><span>设置的referer站点的引用：</span><strong><span>worker域名 + 文件路径</span></strong><span>,即</span><code>https://1795857.xyz/bucket/1.jpg</code></li><li><span>在其他地方需加上token：</span><code>https://1795857.xyz/bucket/1.jpg?token=my_ACCESS_TOKEN</code></li></ol><p class="article-signature">By   @Jrafina
-2026-04-27
+</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-comment">// ---------- 其他请求 ----------</span></span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">    <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">Response</span>(<span class="cm-string">"请求无效"</span>, { <span class="cm-property">status</span>: <span class="cm-number">400</span> });</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">  },</span></pre><pre class="CodeMirror-line" role="presentation"><span role="presentation" style="padding-right: 0.1px;">};</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 2005px;"></div><div class="CodeMirror-gutters" style="display: none; height: 2005px;"></div></div></div></pre><h2 id="变量设置"><span>变量设置</span></h2><p><code>ACCESS_TOKEN</code><span>: 用于验证图片</span></p><h2 id="访问"><span>访问</span></h2><p><span>假如我的worker域名为：</span><code>https://1795857.xyz</code><span>,某张图片的存储桶路径为：</span><code>bucket/1.jpg</code><span>,ACCESS_TOKEN： </span><code>my_ACCESS_TOKEN</code></p><ol><li><span>在</span><code>ALLOWED_DOMAINS</code><span>设置的referer站点的引用：</span><strong><span>worker域名 + 文件路径</span></strong><span>,即</span><code>https://1795857.xyz/bucket/1.jpg</code></li><li><span>在其他地方需加上token：</span><code>https://1795857.xyz/bucket/1.jpg?token=my_ACCESS_TOKEN</code></li></ol><p> </p><p> </p><p> </p><p><span>------------------------------------------------------------------------------完------------------------------------------------------------------------------</span></p><p class="article-signature">By   @Jrafina
+2026-05-01
 本博文内容为原创作品，未经允许不得转载。如需转载，请注明原作者及出处。</p></div></div>
 <script>
-    (function() {
-        const buttons = document.querySelectorAll('.copy-btn');
-        buttons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const codeBlock = btn.closest('.md-fences');
-                if (!codeBlock) return;
-                let codeText = '';
-                const lines = codeBlock.querySelectorAll('.CodeMirror-line');
-                if (lines.length > 0) {
-                    codeText = Array.from(lines).map(function(line) { return line.textContent; }).join('\n');
-                } else {
-                    const code = codeBlock.querySelector('code');
-                    codeText = code ? code.textContent : codeBlock.textContent;
-                }
-                function copySuccess() {
-                    btn.textContent = '已复制';
-                    setTimeout(function() { btn.textContent = '复制'; }, 2000);
-                }
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(codeText).then(copySuccess).catch(function() {
-                        fallbackCopy(codeText, btn);
-                    });
-                } else {
-                    fallbackCopy(codeText, btn);
-                }
-                function fallbackCopy(text, btn) {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    textarea.style.position = 'fixed';
-                    textarea.style.opacity = '0';
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    try {
-                        document.execCommand('copy');
-                        btn.textContent = '已复制';
-                    } catch(e) {
-                        btn.textContent = '复制失败';
-                    }
-                    document.body.removeChild(textarea);
-                    setTimeout(function() { btn.textContent = '复制'; }, 2000);
-                }
-            });
-        });
-    })();
-    </script><script>
     (function() {
         document.querySelectorAll('.copy-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -1421,40 +1369,78 @@ img {
         const toggleBtn = document.getElementById('toc-toggle-btn');
         const floatingToc = document.getElementById('floating-toc');
 
-        // 生成目录
         const write = document.getElementById('write');
         if (!write || !tocBody) return;
-        const headers = write.querySelectorAll('h1, h2, h3');
+
+        // 获取所有标题（h1, h2, h3）
+        const headers = Array.from(write.querySelectorAll('h1, h2, h3'));
         if (!headers.length) return;
 
-        const ul = document.createElement('ul');
-        headers.forEach(function(h) {
-            const li = document.createElement('li');
-            li.className = 'toc-' + h.tagName.toLowerCase();
-            li.textContent = h.textContent;
-            li.addEventListener('click', function() {
-                h.scrollIntoView({ behavior: 'smooth' });
-                // 手机端点击后自动收起
-                if (window.innerWidth <= 900) {
-                    floatingToc.classList.remove('open');
+        // 构建树形结构
+        function buildTree(headers) {
+            const root = [];
+            const stack = [{ level: 0, children: root }];
+            for (let h of headers) {
+                const level = parseInt(h.tagName[1]); // h1->1, h2->2...
+                const item = { level: level, title: h.textContent, element: h, children: [] };
+                while (stack.length > 1 && stack[stack.length-1].level >= level) {
+                    stack.pop();
                 }
-            });
-            ul.appendChild(li);
-        });
-        tocBody.appendChild(ul);
+                stack[stack.length-1].children.push(item);
+                stack.push(item);
+            }
+            return root;
+        }
 
-        // 切换目录显示
-        toggleBtn.addEventListener('click', function(e) {
+        function renderTree(nodes) {
+            if (!nodes.length) return '';
+            let html = '<ul>';
+            for (let node of nodes) {
+                html += `<li class="toc-${node.element.tagName.toLowerCase()}">${escapeHtml(node.title)}`;
+                if (node.children.length) {
+                    html += renderTree(node.children);
+                }
+                html += '</li>';
+            }
+            html += '</ul>';
+            return html;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        const tree = buildTree(headers);
+        const tocHtml = renderTree(tree);
+        tocBody.innerHTML = tocHtml;
+
+        // 为每个 li 绑定点击滚动事件
+        tocBody.querySelectorAll('li').forEach(li => {
+            const titleText = li.textContent;
+            const targetHeader = Array.from(headers).find(h => h.textContent === titleText);
+            if (targetHeader) {
+                li.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    targetHeader.scrollIntoView({ behavior: 'smooth' });
+                    if (window.innerWidth <= 900) {
+                        floatingToc.classList.remove('open');
+                    }
+                });
+            }
+        });
+
+        // 切换目录展开/收起
+        toggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             floatingToc.classList.toggle('open');
         });
 
-        // 点击面板外部关闭（桌面端）
-        document.addEventListener('click', function(e) {
-            if (!floatingToc.contains(e.target)) {
-                floatingToc.classList.remove('open');
-            }
-        });
+        // 注意：已移除点击页面其他区域自动关闭目录的监听器
     })();
     </script></body>
 </html>
