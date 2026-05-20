@@ -80,13 +80,23 @@ document.addEventListener('DOMContentLoaded', function() {
         filterArticles(activeCategory, searchTerm);
     });
 
-    // 文章筛选函数
+    // 文章筛选函数（扩展搜索范围至article-desc和keyword-tag）
     function filterArticles(category, searchTerm = '') {
         allArticles.forEach((article, index) => {
             const articleCategory = article.getAttribute('data-category');
             const articleTitle = article.querySelector('.article-link').textContent.toLowerCase();
+            // 新增：获取文章描述文本
+            const articleDesc = article.querySelector('.article-desc').textContent.toLowerCase();
+            // 新增：获取所有关键词标签文本并拼接
+            const keywordTags = article.querySelectorAll('.keyword-tag');
+            const keywordText = Array.from(keywordTags).map(tag => tag.textContent.toLowerCase()).join(' ');
+            
             const isCategoryMatch = category === 'all' || articleCategory === category;
-            const isSearchMatch = searchTerm === '' || articleTitle.includes(searchTerm);
+            // 新增：匹配标题、描述、关键词标签
+            const isSearchMatch = searchTerm === '' || 
+                                  articleTitle.includes(searchTerm) || 
+                                  articleDesc.includes(searchTerm) || 
+                                  keywordText.includes(searchTerm);
 
             if (isCategoryMatch && isSearchMatch) {
                 article.style.display = '';

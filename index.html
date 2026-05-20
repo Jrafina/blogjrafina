@@ -209,7 +209,7 @@
             </div>
 
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="搜索文章标题..." id="searchInput">
+                <input type="text" class="search-input" placeholder="搜索文章标题/描述/关键词..." id="searchInput">
             </div>
 
             <!-- 新增：无关键词结果提示 -->
@@ -221,7 +221,7 @@
 
             <ul class="article-list" id="articleList">
 
-                <li class="article-item" data-category="tutorials" data-keywords="Markdown 语法 教程 写作">
+                <li class="article-item" data-category="learning" data-keywords="Markdown 语法 教程 写作">
                     <a href="posts\线性代数（速通笔记）.html" class="article-link" target="_blank">线性代数（速通笔记）</a>
                     <span class="article-tag">学习合集</span>
                     <div class="article-meta">上传时间：2026-5-20</div>
@@ -416,7 +416,7 @@
                 }
             }
             
-            // 文章筛选函数（整合关键词筛选）
+            // 文章筛选函数（整合关键词筛选，扩展搜索范围至article-desc和keyword-tag）
             function filterArticles() {
                 const activeCategory = document.querySelector('.category-link.active').getAttribute('data-category');
                 const searchTerm = searchInput.value.toLowerCase().trim();
@@ -426,22 +426,28 @@
                     const articleCategory = article.getAttribute('data-category');
                     const articleTitle = article.querySelector('.article-link').textContent.toLowerCase();
                     const articleDesc = article.querySelector('.article-desc').textContent.toLowerCase();
+                    // 获取所有关键词标签文本
+                    const keywordTags = article.querySelectorAll('.keyword-tag');
+                    const keywordText = Array.from(keywordTags).map(tag => tag.textContent.toLowerCase()).join(' ');
                     const articleKeywords = article.getAttribute('data-keywords').toLowerCase();
                     
                     // 检查分类匹配
                     const isCategoryMatch = activeCategory === 'all' || articleCategory === activeCategory;
                     
-                    // 检查搜索词匹配
+                    // 检查搜索词匹配（标题/描述/关键词标签/data-keywords）
                     const isSearchMatch = searchTerm === '' || 
                                           articleTitle.includes(searchTerm) || 
-                                          articleDesc.includes(searchTerm) ||
+                                          articleDesc.includes(searchTerm) || 
+                                          keywordText.includes(searchTerm) ||
                                           articleKeywords.includes(searchTerm);
                     
                     // 检查关键词匹配
                     let isKeywordMatch = true;
                     if (activeKeywords.size > 0) {
                         isKeywordMatch = false;
-                        const articleKeywordsArray = articleKeywords.split(' ');
+                        const articleKeywordsArray = articleKeywords.split(' ').concat(
+                            Array.from(keywordTags).map(tag => tag.textContent.toLowerCase())
+                        );
                         
                         // 检查文章是否包含所有激活的关键词
                         for (const keyword of activeKeywords) {
