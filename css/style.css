@@ -695,34 +695,40 @@ body::after {
 }
 
 /* Inline code */
-.post-content code:not(.katex *) {
-    background: rgba(0, 0, 0, 0.05);
+.post-content p > code,
+.post-content li > code,
+.post-content td > code,
+.post-content :not(pre):not(.katex):not(.katex-display) > code {
+    background: #f1f5f9;
     padding: 2px 8px;
     border-radius: 5px;
     font-family: var(--font-mono);
-    font-size: 0.9em;
+    font-size: 0.88em;
     color: #e11d48;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
 }
 
 /* Code blocks */
 .post-content pre {
     margin: 1.2em 0;
     padding: 20px 24px;
-    background: #1e293b;
+    background: #1e293b !important;
     border-radius: var(--radius);
     overflow-x: auto;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    display: block;
 }
 
-.post-content pre code {
-    background: none !important;
-    padding: 0;
-    border: none;
-    color: #e2e8f0;
+.post-content pre code,
+.post-content pre code * {
+    color: #e2e8f0 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
     font-family: var(--font-mono);
     font-size: 0.88em;
-    line-height: 1.7;
+    line-height: 1.75;
+    white-space: pre;
 }
 
 /* Tables */
