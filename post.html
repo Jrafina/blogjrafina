@@ -184,42 +184,45 @@
             .then(md => {
                 const div = document.getElementById('postContent');
 
-                // Pre-process: protect math blocks from Marked parser
-                // Store math blocks in a map, replace with placeholders
+                const codeBlocks = [];
                 const mathBlocks = [];
-                let idx = 0;
+                let c = 0, m = 0;
 
-                // Protect $$ ... $$ display math
-                md = md.replace(/\$\$([\s\S]*?)\$\$/g, (match, content) => {
-                    mathBlocks.push({ type: 'display', content: content });
-                    return `@@MATHBLOCK${idx++}@@`;
+                // --- Step 1: Protect fenced code blocks ---
+                md = md.replace(/```[\s\S]*?```/g, (match) => {
+                    codeBlocks.push(match);
+                    return `@@CODE${c++}@@`;
                 });
 
-                // Protect $ ... $ inline math (after $$ are replaced, so $$ won't match)
+                // --- Step 2: Protect inline code ---
+                md = md.replace(/`[^`\n]+`/g, (match) => {
+                    codeBlocks.push(match);
+                    return `@@CODE${c++}@@`;
+                });
+
+                // --- Step 3: Protect $$ display math ---
+                md = md.replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
+                    mathBlocks.push({ type: 'display', content: match });
+                    return `@@MATH${m++}@@`;
+                });
+
+                // --- Step 4: Protect $ inline math (only $ not in CODE placeholders) ---
                 md = md.replace(/\$([^$\n]+?)\$/g, (match, content) => {
-                    // Skip if it looks like a currency (e.g. $100)
                     if (/^\d/.test(content.trim())) return match;
-                    mathBlocks.push({ type: 'inline', content: content });
-                    return `@@MATHINLINE${idx++}@@`;
+                    mathBlocks.push({ type: 'inline', content: match });
+                    return `@@MATH${m++}@@`;
                 });
 
-                // Use marked to render markdown
-                marked.setOptions({
-                    breaks: false,
-                    gfm: true
-                });
+                // --- Step 5: Restore code blocks so Marked parses them ---
+                md = md.replace(/@@CODE(\d+)@@/g, (_, i) => codeBlocks[parseInt(i)]);
 
+                // --- Step 6: Parse with Marked ---
+                marked.setOptions({ breaks: false, gfm: true });
                 let html = marked.parse(md);
 
-                // Restore math placeholders with proper delimiters
-                html = html.replace(/@@MATHBLOCK(\d+)@@/g, (_, i) => {
-                    const block = mathBlocks[parseInt(i)];
-                    return '$$' + block.content + '$$';
-                });
-                html = html.replace(/@@MATHINLINE(\d+)@@/g, (_, i) => {
-                    const block = mathBlocks[parseInt(i)];
-                    return '$' + block.content + '$';
-                });
+                // --- Step 7: Restore math ---
+                html = html.replace(/<p>@@MATH(\d+)@@<\/p>/g, (_, i) => mathBlocks[parseInt(i)].content);
+                html = html.replace(/@@MATH(\d+)@@/g, (_, i) => mathBlocks[parseInt(i)].content);
 
                 div.innerHTML = html;
 
@@ -334,10 +337,7 @@
         requiredMeta: ['nick'],
         lang: 'zh-CN',
         placeholder: '欢迎留言...',
-        emoji: [
-            'https://cdn.jsdelivr.net/gh/walinejs/emojis@1.1.0/weibo',
-            'https://cdn.jsdelivr.net/gh/walinejs/emojis@1.1.0/bilibili',
-        ],
+        emoji: [],
     });
 </script>
 
