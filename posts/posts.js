@@ -4,6 +4,14 @@
 
 const POSTS = [
   {
+    file: "重积分演示.md",
+    title: "重积分演示",
+    date: "2026-07-25",
+    category: "tutorials",
+    desc: "",
+    keywords: [""]
+  },
+  {
     file: "cloudflare部署2fa验证器.md",
     title: "cloudflare部署2fa验证器",
     date: "2026-07-25",

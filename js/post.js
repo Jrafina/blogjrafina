@@ -277,6 +277,14 @@
             return root.children;
         }
 
+        // Get clean heading text excluding KaTeX MathML annotations
+        function getTocText(heading) {
+            const clone = heading.cloneNode(true);
+            // Remove MathML elements – they contain raw LaTeX source in <annotation>
+            clone.querySelectorAll('.katex-mathml').forEach(el => el.remove());
+            return clone.textContent.trim();
+        }
+
         // Render nested <ul> from tree nodes
         function renderTree(nodes) {
             if (nodes.length === 0) return '';
@@ -285,7 +293,7 @@
                 const h = node.el;
                 const tag = h.tagName.toLowerCase();
                 html += '<li>';
-                html += `<a href="#${h.id}" class="toc-${tag}">${h.textContent}</a>`;
+                html += `<a href="#${h.id}" class="toc-${tag}">${getTocText(h)}</a>`;
                 if (node.children.length > 0) {
                     html += renderTree(node.children);
                 }
