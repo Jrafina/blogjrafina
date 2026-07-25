@@ -4,12 +4,12 @@
 
 const POSTS = [
   {
-    file: "demo-post.md",
-    title: "Markdown 测试文章 - 数学公式示例",
+    file: "cloudflare部署2fa验证器.md",
+    title: "cloudflare部署2fa验证器",
     date: "2026-07-25",
     category: "tutorials",
-    desc: "一篇展示 Markdown 渲染能力的测试文章，包含行内公式、块级公式、代码块、表格等。",
-    keywords: ["Markdown", "KaTeX", "数学公式", "测试"]
+    desc: "2fa验证器",
+    keywords: ["2fa验证器", "cloudflare"]
   },
   {
     file: "概率论与数理统计.html",
@@ -20,7 +20,7 @@ const POSTS = [
     keywords: ["概率论", "数理统计", "数学"]
   },
   {
-    file: "2fa验证添加.html",
+    file: "2fa验证添加.md",
     title: "2fa验证添加",
     date: "2026-05-23",
     category: "tutorials",
@@ -36,7 +36,7 @@ const POSTS = [
     keywords: ["线性代数", "速通笔记"]
   },
   {
-    file: "📘 Cloudflare R2 + rclone 配置完全指南（Windows）.html",
+    file: "📘 Cloudflare R2 + rclone 配置完全指南（Windows）.md",
     title: "Cloudflare R2 + rclone 配置完全指南",
     date: "2026-05-01",
     category: "tutorials",
@@ -44,7 +44,7 @@ const POSTS = [
     keywords: ["Cloudflare", "R2", "rclone"]
   },
   {
-    file: "图片代理和防盗链.html",
+    file: "图片代理和防盗链.md",
     title: "图片代理及防盗链",
     date: "2026-05-01",
     category: "tutorials",
@@ -52,15 +52,7 @@ const POSTS = [
     keywords: ["Cloudflare", "Worker", "防盗链"]
   },
   {
-    file: "cf密码代理.html",
-    title: "Cloudflare Worker 代理密码及保护 HTML",
-    date: "2026-04-27",
-    category: "tutorials",
-    desc: "Cloudflare Worker 代理密码及保护 HTML",
-    keywords: ["Cloudflare", "Worker", "密码"]
-  },
-  {
-    file: "markdown语法学习.html",
+    file: "markdown语法学习.md",
     title: "Markdown 语法学习",
     date: "2025-12-05",
     category: "tutorials",

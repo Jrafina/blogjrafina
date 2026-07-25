@@ -80,6 +80,9 @@
                 const writeDiv = doc.body.querySelector('#write') || doc.body.querySelector('.markdown-body');
                 container.innerHTML = writeDiv ? writeDiv.innerHTML : doc.body.innerHTML;
 
+                // Add copy buttons to code blocks
+                addCopyButtons(container);
+
                 // Render KaTeX
                 window.renderMathInElement(container, KATEX_OPTS);
 
@@ -107,10 +110,40 @@
                 let c = 0, m = 0;
 
                 // --- Step 1: Protect fenced code blocks ---
-                md = md.replace(/(```[\s\S]*?```)/g, (match) => {
-                    codeBlocks.push(match);
-                    return `\n@@CODEBLOCK${c++}@@\n`;
-                });
+                // Manual line-scan: match opening fence by backtick count
+                // so nested fences (e.g. 4-backtick block containing 3-backtick
+                // example) are handled correctly.
+                const lines = md.split('\n');
+                let src = '';
+                let i = 0;
+
+                while (i < lines.length) {
+                    const m = lines[i].match(/^(\s*)(`{3,})([^`]*)$/);
+                    if (m) {
+                        const fenceLen = m[2].length;
+                        const lang = m[3].trim();
+                        const blockLines = [];
+                        let j = i + 1;
+                        // Find closing fence: at least fenceLen backticks, nothing else
+                        const closeRe = new RegExp('^\\s*`{' + fenceLen + ',}\\s*$');
+                        while (j < lines.length && !closeRe.test(lines[j])) {
+                            blockLines.push(lines[j]);
+                            j++;
+                        }
+                        if (j < lines.length) {
+                            // Found closing fence
+                            const fullBlock = m[0] + '\n' + blockLines.join('\n') + '\n' + lines[j];
+                            codeBlocks.push(fullBlock);
+                            src += '\n@@CODEBLOCK' + (c++) + '@@\n';
+                            i = j + 1;
+                            continue;
+                        }
+                        // No matching close found — treat as regular text
+                    }
+                    src += lines[i] + '\n';
+                    i++;
+                }
+                md = src;
 
                 // --- Step 2: Protect $$ display math ---
                 md = md.replace(/\$\$([\s\S]*?)\$\$/g, (_m, content) => {
@@ -141,6 +174,9 @@
 
                 container.innerHTML = html;
 
+                // Add copy buttons to code blocks
+                addCopyButtons(container);
+
                 // Render KaTeX
                 window.renderMathInElement(container, KATEX_OPTS);
 
@@ -152,6 +188,57 @@
                     `<p style="text-align:center;padding:60px;color:var(--text-tertiary);">
                         文章加载失败：${err.message}<br><a href="index.html">返回首页</a></p>`;
             });
+    }
+
+    // ============== Add Copy Buttons to Code Blocks ==============
+    function addCopyButtons(container) {
+        container.querySelectorAll('pre').forEach(pre => {
+            // Don't add if already wrapped
+            if (pre.parentNode.classList.contains('code-block-wrapper')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.innerHTML = '<i class="fa-solid fa-copy"></i> 复制';
+            btn.setAttribute('aria-label', '复制代码');
+
+            btn.addEventListener('click', () => {
+                const code = pre.textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> 已复制';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fa-solid fa-copy"></i> 复制';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code;
+                    textarea.style.cssText = 'position:fixed;left:-9999px;';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> 已复制';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="fa-solid fa-copy"></i> 复制';
+                            btn.classList.remove('copied');
+                        }, 2000);
+                    } catch (e) {
+                        btn.innerHTML = '<i class="fa-solid fa-xmark"></i> 复制失败';
+                    }
+                    document.body.removeChild(textarea);
+                });
+            });
+
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(btn);
+            wrapper.appendChild(pre);
+        });
     }
 
     // ============== TOC Generator ==============
@@ -166,28 +253,61 @@
         }
         tocEmpty.style.display = 'none';
 
-        const ul = document.createElement('ul');
-        ul.className = 'toc-list';
+        // Build a nested tree of headings
+        // Each node: { el, level, children: [] }
+        function buildTree() {
+            const root = { level: 0, children: [] };
+            const stack = [root];
 
-        headings.forEach((h, i) => {
-            if (!h.id) h.id = 'heading-' + (i + 1);
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = '#' + h.id;
-            a.textContent = h.textContent;
-            a.className = 'toc-' + h.tagName.toLowerCase();
+            headings.forEach((h, i) => {
+                if (!h.id) h.id = 'heading-' + (i + 1);
+                const level = parseInt(h.tagName.charAt(1)); // h1->1, h2->2, ...
+                const node = { el: h, level: level, children: [] };
 
+                // Pop stack until we're at a parent level
+                while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+                    stack.pop();
+                }
+                // Attach to parent
+                const parent = stack[stack.length - 1] || root;
+                parent.children.push(node);
+                stack.push(node);
+            });
+
+            return root.children;
+        }
+
+        // Render nested <ul> from tree nodes
+        function renderTree(nodes) {
+            if (nodes.length === 0) return '';
+            let html = '<ul class="toc-list">';
+            nodes.forEach(node => {
+                const h = node.el;
+                const tag = h.tagName.toLowerCase();
+                html += '<li>';
+                html += `<a href="#${h.id}" class="toc-${tag}">${h.textContent}</a>`;
+                if (node.children.length > 0) {
+                    html += renderTree(node.children);
+                }
+                html += '</li>';
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        const tree = buildTree();
+        tocNav.innerHTML = renderTree(tree);
+
+        // Bind click events
+        tocNav.querySelectorAll('a').forEach(a => {
             a.addEventListener('click', function(e) {
                 e.preventDefault();
-                document.getElementById(h.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const target = document.getElementById(a.getAttribute('href').slice(1));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 tocNav.querySelectorAll('a').forEach(link => link.classList.remove('active'));
                 a.classList.add('active');
             });
-
-            li.appendChild(a);
-            ul.appendChild(li);
         });
-        tocNav.appendChild(ul);
 
         // Scroll spy
         const observer = new IntersectionObserver((entries) => {
