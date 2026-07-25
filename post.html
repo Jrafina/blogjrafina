@@ -56,12 +56,6 @@
                 <i class="fa-solid fa-spinner fa-spin"></i> 加载中...
             </p>
         </article>
-
-        <!-- Comments -->
-        <section class="comments-section glass-card" style="margin-top:48px;">
-            <div class="comments-title">💬 评论</div>
-            <div id="waline"></div>
-        </section>
     </main>
 
     <!-- ============ RIGHT: TOC Sidebar ============ -->
@@ -85,21 +79,6 @@
 
     <!-- Post page logic -->
     <script src="js/post.js"></script>
-
-<!-- ============ Waline Comments ============ -->
-<script type="module">
-    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
-    init({
-        el: '#waline',
-        serverURL: 'https://comment2.1795857.xyz',
-        dark: false,
-        meta: ['nick', 'mail', 'link'],
-        requiredMeta: ['nick'],
-        lang: 'zh-CN',
-        placeholder: '欢迎留言...',
-        emoji: [],
-    });
-</script>
 
 </body>
 </html>
