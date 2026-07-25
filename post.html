@@ -183,46 +183,42 @@
             })
             .then(md => {
                 const div = document.getElementById('postContent');
-
                 const codeBlocks = [];
                 const mathBlocks = [];
                 let c = 0, m = 0;
 
-                // --- Step 1: Protect fenced code blocks ---
-                md = md.replace(/```[\s\S]*?```/g, (match) => {
+                // --- Step 1: Protect fenced code blocks FIRST ---
+                md = md.replace(/(```[\s\S]*?```)/g, (match) => {
                     codeBlocks.push(match);
-                    return `@@CODE${c++}@@`;
+                    return `\n@@CODEBLOCK${c++}@@\n`;
                 });
 
-                // --- Step 2: Protect inline code ---
-                md = md.replace(/`[^`\n]+`/g, (match) => {
-                    codeBlocks.push(match);
-                    return `@@CODE${c++}@@`;
+                // --- Step 2: Protect $$ display math ---
+                md = md.replace(/\$\$([\s\S]*?)\$\$/g, (_m, content) => {
+                    mathBlocks.push({ type: 'display', content: '$$' + content + '$$' });
+                    return `\n@@MATH${m++}@@\n`;
                 });
 
-                // --- Step 3: Protect $$ display math ---
-                md = md.replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
-                    mathBlocks.push({ type: 'display', content: match });
+                // --- Step 3: Protect $ inline math ---
+                md = md.replace(/\$([^$\n]+?)\$/g, (_m, content) => {
+                    if (/^\d/.test(content.trim())) return _m;
+                    mathBlocks.push({ type: 'inline', content: '$' + content + '$' });
                     return `@@MATH${m++}@@`;
                 });
 
-                // --- Step 4: Protect $ inline math (only $ not in CODE placeholders) ---
-                md = md.replace(/\$([^$\n]+?)\$/g, (match, content) => {
-                    if (/^\d/.test(content.trim())) return match;
-                    mathBlocks.push({ type: 'inline', content: match });
-                    return `@@MATH${m++}@@`;
-                });
+                // --- Step 4: Restore code blocks ---
+                md = md.replace(/@@CODEBLOCK(\d+)@@/g,
+                    (_m, i) => codeBlocks[parseInt(i)]);
 
-                // --- Step 5: Restore code blocks so Marked parses them ---
-                md = md.replace(/@@CODE(\d+)@@/g, (_, i) => codeBlocks[parseInt(i)]);
-
-                // --- Step 6: Parse with Marked ---
+                // --- Step 5: Parse with Marked ---
                 marked.setOptions({ breaks: false, gfm: true });
                 let html = marked.parse(md);
 
-                // --- Step 7: Restore math ---
-                html = html.replace(/<p>@@MATH(\d+)@@<\/p>/g, (_, i) => mathBlocks[parseInt(i)].content);
-                html = html.replace(/@@MATH(\d+)@@/g, (_, i) => mathBlocks[parseInt(i)].content);
+                // --- Step 6: Restore math ---
+                html = html.replace(/<p[^>]*>@@MATH(\d+)@@<\/p>/g,
+                    (_m, i) => mathBlocks[parseInt(i)].content);
+                html = html.replace(/@@MATH(\d+)@@/g,
+                    (_m, i) => mathBlocks[parseInt(i)].content);
 
                 div.innerHTML = html;
 
