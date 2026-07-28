@@ -4,6 +4,14 @@
 
 const POSTS = [
   {
+    file: "github通过ssh连接本地windows电脑.md",
+    title: "github通过ssh连接本地windows电脑",
+    date: "2026-07-28",
+    category: "tutorials",
+    desc: "github通过ssh密钥连接解决https连接问题",
+    keywords: ["github","ssh"]
+  },
+  {
     file: "重积分演示.md",
     title: "重积分演示",
     date: "2026-07-25",
