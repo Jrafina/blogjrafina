@@ -4,6 +4,14 @@
 
 const POSTS = [
   {
+    file: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载.md",
+    title: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载",
+    date: "2026-08-04",
+    category: "tutorials",
+    desc: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载",
+    keywords: ["飞牛", "veracrypt", "加密盘", "卸载"]
+  },
+  {
     file: "github通过ssh连接本地windows电脑.md",
     title: "github通过ssh连接本地windows电脑",
     date: "2026-07-28",
