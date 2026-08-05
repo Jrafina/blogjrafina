@@ -9,7 +9,8 @@ const POSTS = [
     date: "2026-08-04",
     category: "tutorials",
     desc: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载",
-    keywords: ["飞牛", "veracrypt", "加密盘", "卸载"]
+    keywords: ["飞牛", "veracrypt", "加密盘", "卸载"],
+    cover: "https://img.1795857.xyz/file/博客/在飞牛上面解锁挂在_veracrypt_加密盘及卸载.png"
   },
   {
     file: "github通过ssh连接本地windows电脑.md",
@@ -17,7 +18,8 @@ const POSTS = [
     date: "2026-07-28",
     category: "tutorials",
     desc: "github通过ssh密钥连接解决https连接问题",
-    keywords: ["github","ssh"]
+    keywords: ["github","ssh"],
+    cover: "https://img.1795857.xyz/file/博客/GitHub_通过_SSH_连接本地_Windows_电脑.png"
   },
   {
     file: "重积分演示.md",
@@ -25,7 +27,8 @@ const POSTS = [
     date: "2026-07-25",
     category: "tutorials",
     desc: "",
-    keywords: [""]
+    keywords: [""],
+    cover: "https://img.1795857.xyz/file/博客/重积分演示.png"
   },
   {
     file: "cloudflare部署2fa验证器.md",
@@ -33,7 +36,8 @@ const POSTS = [
     date: "2026-07-25",
     category: "tutorials",
     desc: "2fa验证器",
-    keywords: ["2fa验证器", "cloudflare"]
+    keywords: ["2fa验证器", "cloudflare"],
+    cover: "https://img.1795857.xyz/file/博客/cloudflare部署2fa验证器.png"
   },
   {
     file: "概率论与数理统计.html",
@@ -41,7 +45,8 @@ const POSTS = [
     date: "2026-05-23",
     category: "learning",
     desc: "概率论与数理统计（速通）",
-    keywords: ["概率论", "数理统计", "数学"]
+    keywords: ["概率论", "数理统计", "数学"],
+    cover: "https://picsum.photos/seed/probability-stats/800/450"
   },
   {
     file: "2fa验证添加.md",
@@ -49,7 +54,8 @@ const POSTS = [
     date: "2026-05-23",
     category: "tutorials",
     desc: "可以为前端项目添加一个2fa验证保护",
-    keywords: ["Cloudflare Worker", "2FA", "安全"]
+    keywords: ["Cloudflare Worker", "2FA", "安全"],
+    cover: "https://picsum.photos/seed/totp-add/800/450"
   },
   {
     file: "线性代数（速通笔记）.html",
@@ -57,7 +63,8 @@ const POSTS = [
     date: "2026-05-20",
     category: "learning",
     desc: "线性代数",
-    keywords: ["线性代数", "速通笔记"]
+    keywords: ["线性代数", "速通笔记"],
+    cover: "https://picsum.photos/seed/linear-algebra/800/450"
   },
   {
     file: "📘 Cloudflare R2 + rclone 配置完全指南（Windows）.md",
@@ -65,7 +72,8 @@ const POSTS = [
     date: "2026-05-01",
     category: "tutorials",
     desc: "Cloudflare R2 + rclone 配置完全指南",
-    keywords: ["Cloudflare", "R2", "rclone"]
+    keywords: ["Cloudflare", "R2", "rclone"],
+    cover: "https://picsum.photos/seed/r2-rclone/800/450"
   },
   {
     file: "图片代理和防盗链.md",
@@ -73,7 +81,8 @@ const POSTS = [
     date: "2026-05-01",
     category: "tutorials",
     desc: "Cloudflare Worker 代理图片及防盗链",
-    keywords: ["Cloudflare", "Worker", "防盗链"]
+    keywords: ["Cloudflare", "Worker", "防盗链"],
+    cover: "https://picsum.photos/seed/image-proxy/800/450"
   },
   {
     file: "markdown语法学习.md",
@@ -81,6 +90,7 @@ const POSTS = [
     date: "2025-12-05",
     category: "tutorials",
     desc: "简易版 Markdown 的语法总结",
-    keywords: ["Markdown", "语法", "教程", "写作"]
+    keywords: ["Markdown", "语法", "教程", "写作"],
+    cover: "https://picsum.photos/seed/markdown/800/450"
   }
 ];

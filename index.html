@@ -166,27 +166,37 @@
     const allKeywords = [...new Set(POSTS.flatMap(p => p.keywords || []))].sort();
 
     // --- Build post list HTML ---
-    function buildPostItem(post) {
+    function buildPostItem(post, index) {
         const kwTags = (post.keywords || []).map(kw =>
             `<span class="kw-tag" data-kw="${kw}">${kw}</span>`
         ).join('');
 
+        // 封面：奇偶交错，第 0/2/4... 项图片在左，第 1/3/5... 项图片在右
+        const side = index % 2 === 0 ? 'left' : 'right';
+        const coverHtml = post.cover ? `
+            <div class="post-cover-wrap">
+                <img src="${post.cover}" alt="${post.title} 封面" class="post-cover" loading="lazy">
+            </div>` : '';
+
         return `
-        <li class="post-item glass-card"
+        <li class="post-item glass-card" data-side="${side}"
             data-cat="${post.category}"
             data-keywords="${(post.keywords || []).join(',')}"
             data-title="${post.title.toLowerCase()}"
             data-desc="${post.desc.toLowerCase()}">
 
-            <a href="post.html?post=${encodeURIComponent(post.file)}" class="post-title-link">
-                ${post.title}
-            </a>
-            <span class="post-tag ${post.category}">
-                ${post.category === 'tutorials' ? '教程归纳' : '学习合集'}
-            </span>
-            <span class="post-date">${post.date}</span>
-            <p class="post-desc">${post.desc}</p>
-            <div class="post-keywords">${kwTags}</div>
+            ${coverHtml}
+            <div class="post-body">
+                <a href="post.html?post=${encodeURIComponent(post.file)}" class="post-title-link">
+                    ${post.title}
+                </a>
+                <span class="post-tag ${post.category}">
+                    ${post.category === 'tutorials' ? '教程归纳' : '学习合集'}
+                </span>
+                <span class="post-date">${post.date}</span>
+                <p class="post-desc">${post.desc}</p>
+                <div class="post-keywords">${kwTags}</div>
+            </div>
         </li>`;
     }
 
@@ -196,7 +206,7 @@
 
     // --- Render ---
     function renderPosts() {
-        postList.innerHTML = POSTS.map(buildPostItem).join('');
+        postList.innerHTML = POSTS.map((post, i) => buildPostItem(post, i)).join('');
         quickNav.innerHTML = POSTS.map(buildQuickNavItem).join('');
         bindKwTagClicks();
     }

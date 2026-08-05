@@ -270,11 +270,47 @@ body::after {
     padding: 22px 26px;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: 10px 14px;
+    align-items: center;
+    gap: 22px;
     position: relative;
     overflow: hidden;
 }
+
+/* === Post Cover (封面) ===
+   图片占列表项宽度的 3/10，左/右交错排列（data-side 由 JS 控制） */
+.post-cover-wrap {
+    flex: 0 0 30%;
+    order: 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.post-cover {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition);
+}
+
+.post-item:hover .post-cover {
+    transform: scale(1.04);
+}
+
+.post-body {
+    flex: 1;
+    order: 2;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 14px;
+}
+
+.post-item[data-side="right"] .post-cover-wrap { order: 2; }
+.post-item[data-side="right"] .post-body { order: 1; }
 
 .post-item::before {
     content: '';
@@ -1052,6 +1088,19 @@ body::after {
 
     .post-item {
         padding: 16px 18px;
+        gap: 14px;
+    }
+
+    /* 小屏：封面占满整行，置顶显示（不再左右交错） */
+    .post-cover-wrap,
+    .post-item[data-side="right"] .post-cover-wrap {
+        flex: 1 1 100%;
+        order: 1;
+    }
+
+    .post-item[data-side="right"] .post-body,
+    .post-body {
+        order: 2;
     }
 
     .post-title-link {
