@@ -4,6 +4,15 @@
 
 const POSTS = [
   {
+    file: "本地上传项目到github.md",
+    title: "本地上传项目到github",
+    date: "2026-08-04",
+    category: "tutorials",
+    desc: "本地上传项目到github",
+    keywords: ["github", "上传", "项目"],
+    cover: "https://img.1795857.xyz/file/博客/本地项目推送_GitHub_教程.png"
+  },
+  {
     file: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载.md",
     title: "在飞牛上面解锁挂在 veracrypt 加密盘及卸载",
     date: "2026-08-04",
