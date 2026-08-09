@@ -1,0 +1,171 @@
+/* ================================================================
+   看板娘 Mascot — 博客小宠物
+   结构：.mascot > .mascot-bubble + img.mascot-img
+   大小和初始位置由 js/mascot.js 的 CFG 配置控制
+   ================================================================ */
+
+.mascot {
+    position: fixed;
+    z-index: 9999;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;              /* 触屏拖动时不跟着滚动页面 */
+    --mascot-size: 170px;
+}
+
+.mascot.dragging { cursor: grabbing; }
+
+/* ---------- 角色图片 ---------- */
+.mascot-img {
+    width: var(--mascot-size);
+    height: auto;
+    display: block;
+    pointer-events: none;
+    /* 双重阴影：紧贴的深色描边 + 柔和投影，让浅色角色在浅色背景上也能分离出来 */
+    filter: drop-shadow(0 0 3px rgba(15, 23, 42, 0.30))
+            drop-shadow(0 10px 18px rgba(15, 23, 42, 0.30));
+    animation: mascot-float 3.2s ease-in-out infinite;
+}
+
+/* 拖动时暂停漂浮，跟手更稳 */
+.mascot.dragging .mascot-img { animation-play-state: paused; }
+
+@keyframes mascot-float {
+    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+    50%      { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+/* ---------- 动作动画（点击 / 待机时由 JS 随机挑一个） ---------- */
+.mascot.anim-bounce { animation: mascot-bounce 0.55s cubic-bezier(0.36, 1.6, 0.5, 1); }
+.mascot.anim-wiggle { animation: mascot-wiggle 0.8s ease-in-out; }
+.mascot.anim-spin   { animation: mascot-spin 0.9s cubic-bezier(0.4, 1.4, 0.4, 1); }
+.mascot.anim-jump   { animation: mascot-jump 0.7s ease; }
+.mascot.anim-squash { animation: mascot-squash 0.5s ease; }
+
+@keyframes mascot-bounce {
+    0%   { transform: translateY(0) scale(1); }
+    30%  { transform: translateY(-16px) scale(1.08); }
+    60%  { transform: translateY(4px) scale(0.96); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes mascot-wiggle {
+    0%, 100% { transform: rotate(0); }
+    25%      { transform: rotate(-12deg); }
+    50%      { transform: rotate(10deg); }
+    75%      { transform: rotate(-6deg); }
+}
+
+@keyframes mascot-spin {
+    from { transform: rotate(0); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes mascot-jump {
+    0%, 100% { transform: translateY(0); }
+    40%      { transform: translateY(-26px); }
+    70%      { transform: translateY(-6px); }
+}
+
+@keyframes mascot-squash {
+    0%, 100% { transform: scale(1, 1); }
+    35%      { transform: scale(1.12, 0.85); }
+    65%      { transform: scale(0.95, 1.1); }
+}
+
+/* ---------- 说话气泡 ---------- */
+.mascot-bubble {
+    position: absolute;
+    left: 50%;                       /* JS 会按需覆盖此值做视口内夹取 */
+    bottom: calc(100% + 14px);
+    transform: translateX(-50%) scale(0.7);
+    transform-origin: bottom center;
+    /* 宽度自适应内容（不再被角色容器宽度卡住，文字不会挤成竖条） */
+    width: max-content;
+    max-width: min(240px, 70vw);
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    color: #333;
+    font-size: 14px;
+    line-height: 1.55;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;            /* 气泡不挡鼠标，事件都落到角色身上 */
+}
+
+.mascot-bubble.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+}
+
+/* 气泡小尾巴 */
+.mascot-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border: 6px solid transparent;
+    border-top-color: #fff;
+}
+
+/* ---------- 横飘仙气拖尾（JS 在漂移时动态生成） ---------- */
+.mascot-ghost {
+    position: fixed;
+    z-index: 9998;               /* 角色(9999)之下 */
+    pointer-events: none;
+    height: auto;
+    opacity: 0.5;
+    filter: blur(3px) brightness(1.5);
+    transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+}
+
+.mascot-trail-glow {
+    position: fixed;
+    z-index: 9997;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 70%);
+    filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* ---------- 图片加载失败时的兜底小圆脸 ---------- */
+.mascot-fallback-face {
+    width: var(--mascot-size);
+    height: var(--mascot-size);
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd9e6, #ffeef4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--mascot-size) * 0.52);
+}
+
+/* ---------- 深色模式适配 ---------- */
+@media (prefers-color-scheme: dark) {
+    .mascot-bubble {
+        background: rgba(32, 32, 38, 0.96);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #eee;
+    }
+    .mascot-bubble::after { border-top-color: rgba(32, 32, 38, 0.96); }
+}
+
+/* ---------- 系统"减少动态效果"偏好：关掉所有动画 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .mascot-img,
+    .mascot.anim-bounce,
+    .mascot.anim-wiggle,
+    .mascot.anim-spin,
+    .mascot.anim-jump,
+    .mascot.anim-squash { animation: none; }
+}
