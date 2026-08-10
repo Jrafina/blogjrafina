@@ -4,6 +4,15 @@
 
 const POSTS = [
   {
+    file: "linux基础学习.md",
+    title: "linux基础学习",
+    date: "2026-08-10",
+    category: "learning",
+    desc: "linux基础学习",
+    keywords: ["linux"],
+    cover: "https://img.1795857.xyz/file/博客/linux基础学习.png"
+  },
+  {
     file: "本地上传项目到github.md",
     title: "本地上传项目到github",
     date: "2026-08-04",
