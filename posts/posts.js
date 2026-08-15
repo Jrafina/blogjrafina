@@ -4,6 +4,15 @@
 
 const POSTS = [
   {
+    file: "服务器虚拟环境激活并添加system进程守护.md",
+    title: "服务器虚拟环境激活并添加system进程守护",
+    date: "2026-08-10",
+    category: "tutorials",
+    desc: "服务器虚拟环境激活并添加system进程守护",
+    keywords: ["linux","python","虚拟环境","systemd"],
+    cover: "https://img.1795857.xyz/file/博客/服务器虚拟环境激活并添加system进程守护.png"
+  },
+  {
     file: "linux基础学习.md",
     title: "linux基础学习",
     date: "2026-08-10",
