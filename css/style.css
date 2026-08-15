@@ -815,9 +815,13 @@ body::after {
     color: #22c55e;
 }
 
+.post-content pre code {
+    color: #e2e8f0;
+}
+
+/* Reset theme styles on tokens, but let highlight.js colors show through */
 .post-content pre code,
 .post-content pre code * {
-    color: #e2e8f0 !important;
     background: transparent !important;
     border: none !important;
     padding: 0 !important;

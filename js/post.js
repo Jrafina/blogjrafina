@@ -163,7 +163,18 @@
                     (_m, i) => codeBlocks[parseInt(i)]);
 
                 // --- Step 5: Parse with Marked ---
-                marked.setOptions({ breaks: false, gfm: true });
+                marked.setOptions({
+                    breaks: false,
+                    gfm: true,
+                    // Syntax highlight via highlight.js; unknown/no language → auto-detect
+                    highlight: function(code, lang) {
+                        const language = (lang || '').toLowerCase();
+                        if (language && hljs.getLanguage(language)) {
+                            return hljs.highlight(code, { language: language }).value;
+                        }
+                        return hljs.highlightAuto(code).value;
+                    }
+                });
                 let html = marked.parse(md);
 
                 // --- Step 6: Restore math ---
