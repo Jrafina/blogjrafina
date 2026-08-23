@@ -23,7 +23,7 @@ git commit -m "初始提交"
 git branch -M main
 
 # 6. 关联远程仓库（换成你自己复制的地址）
-git remote set-url origin git@github.com:用户名/仓库名.git
+git remote add origin git@github.com:用户名/仓库名.git
 
 # 7. 推送到 GitHub
 git push -u origin main
