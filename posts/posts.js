@@ -4,6 +4,15 @@
 
 const POSTS = [
   {
+    file: "齐次变换矩阵.md",
+    title: "齐次变换矩阵",
+    date: "2026-09-29",
+    category: "learning",
+    desc: "齐次变换矩阵",
+    keywords: ["矩阵", "变换"],
+    cover: "https://img.1795857.xyz/file/博客/齐次变换矩阵/齐次变换矩阵.png"
+  },
+  {
     file: "服务器虚拟环境激活并添加system进程守护.md",
     title: "服务器虚拟环境激活并添加system进程守护",
     date: "2026-08-10",
