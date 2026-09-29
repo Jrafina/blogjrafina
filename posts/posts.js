@@ -76,15 +76,6 @@ const POSTS = [
     cover: "https://img.1795857.xyz/file/博客/cloudflare部署2fa验证器.png"
   },
   {
-    file: "概率论与数理统计.html",
-    title: "概率论与数理统计",
-    date: "2026-05-23",
-    category: "learning",
-    desc: "概率论与数理统计（速通）",
-    keywords: ["概率论", "数理统计", "数学"],
-    cover: "https://picsum.photos/seed/probability-stats/800/450"
-  },
-  {
     file: "2fa验证添加.md",
     title: "2fa验证添加",
     date: "2026-05-23",
