@@ -94,7 +94,7 @@ const POSTS = [
     cover: "https://picsum.photos/seed/totp-add/800/450"
   },
   {
-    file: "线性代数（速通笔记）.html",
+    file: "线性代数（速通笔记）.md",
     title: "线性代数（速通笔记）",
     date: "2026-05-20",
     category: "learning",
