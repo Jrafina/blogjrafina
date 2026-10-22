@@ -4,7 +4,7 @@
 
 const POSTS = [
   {
-    file: "EasyTier_中转节点部署.md",
+    file: "EasyTier中转节点部署总结.md",
     title: "EasyTier 中转节点部署",
     date: "2026-09-29",
     category: "learning",
