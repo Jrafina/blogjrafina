@@ -6,7 +6,7 @@ const POSTS = [
   {
     file: "EasyTier中转节点部署总结.md",
     title: "EasyTier中转节点部署",
-    date: "2026-09-29",
+    date: "2026-10-22",
     category: "tutorials",
     desc: "EasyTier中转节点部署",
     keywords: ["EasyTier", "中转节点"],
