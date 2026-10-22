@@ -5,10 +5,10 @@
 const POSTS = [
   {
     file: "EasyTier中转节点部署总结.md",
-    title: "EasyTier 中转节点部署",
+    title: "EasyTier中转节点部署",
     date: "2026-09-29",
-    category: "learning",
-    desc: "EasyTier 中转节点部署",
+    category: "tutorials",
+    desc: "EasyTier中转节点部署",
     keywords: ["EasyTier", "中转节点"],
     cover: "https://img.1795857.xyz/file/博客/EasyTier_中转节点部署/EasyTier中转节点部署指南.png"
   },
