@@ -1,0 +1,79 @@
+/* ================================================================
+   桌宠 DeskPet — 透明背景舞蹈视频，固定在左下角，不可拖动
+   ------------------------------------------------------------------
+   结构（由 js/deskpet.js 动态生成）：
+     .deskpet > .deskpet-stage > video.deskpet-video × N（同一时刻只有一帧可见）
+   视频为带 alpha 通道的 WebM（VP9 yuva420p），背景已抠除，
+   因此页面底色直接透出来，无需额外遮罩或混合模式。
+   ================================================================ */
+
+.deskpet {
+    position: fixed;
+    left: 6px;
+    bottom: 0;
+    z-index: 900;                 /* 低于弹窗/评论框，高于普通正文 */
+    pointer-events: none;         /* 关键：整块不可点击、不可拖动、不挡正文交互 */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    /* 尺寸：桌面端 240px，随视口小幅收缩，手机上更小以免挡内容 */
+    --pet-size: 240px;
+}
+
+.deskpet.is-ready { opacity: 1; }
+
+.deskpet-stage {
+    position: relative;
+    width: var(--pet-size);
+    height: var(--pet-size);
+    /* 底部留一点空隙，让脚底不贴死视口边缘 */
+    margin-bottom: 6px;
+    animation: deskpet-breathe 4.6s ease-in-out infinite;
+}
+
+/* 两层 video 叠放，靠 opacity 交叉淡入淡出，切换时不会出现黑框或白闪 */
+.deskpet-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.26s ease;
+    pointer-events: none;
+    outline: none;
+    border: 0;
+    background: transparent;      /* 浏览器不支持 alpha WebM 时也不出现黑底 */
+    /* 用投影把浅色角色从浅色背景里分离出来（对 alpha 形状生效） */
+    filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.28));
+}
+
+.deskpet-video.is-active {
+    opacity: 1;
+}
+
+@keyframes deskpet-breathe {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-5px); }
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1024px) {
+    .deskpet { --pet-size: 200px; }
+}
+
+@media (max-width: 720px) {
+    .deskpet { --pet-size: 148px; }
+}
+
+@media (max-width: 480px) {
+    .deskpet { --pet-size: 116px; }
+}
+
+/* ---------- 尊重"减少动态效果"：去掉呼吸浮动，但舞蹈继续播放 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .deskpet-stage { animation: none; }
+}
