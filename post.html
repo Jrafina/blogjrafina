@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">文章 - Jrafina的博客</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- KaTeX for math formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <!-- Highlight.js theme for code blocks (dark, matches pre background) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+    <!-- Blog styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 桌宠 -->
+    <link rel="stylesheet" href="css/deskpet.css">
+    <!-- Favicon -->
+    <link rel="icon" href="https://img-proxy.ppig.eu.cc/drawingbed/2026/04/头像.ico" type="image/x-icon">
+
+    <!-- Posts manifest -->
+    <script src="posts/posts.js"></script>
+    <!-- Marked.js for Markdown rendering (v4.3 global `marked`) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <!-- Highlight.js for code syntax highlighting (base build: 37 common languages; +powershell, which posts use a lot) -->
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/powershell.min.js"></script>
+    <!-- KaTeX for math -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- KaTeX auto-render extension -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+<!-- Layout -->
+<div class="page-wrap">
+
+    <!-- ============ LEFT: Post Content ============ -->
+    <main class="main-panel glass-strong">
+
+        <!-- Back link -->
+        <a href="index.html" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> 返回文章列表
+        </a>
+
+        <!-- Post Meta -->
+        <div class="post-meta-bar" id="postMeta" style="display:none;">
+            <span class="post-tag" id="postTag"></span>
+            <span class="post-date" id="postDate"></span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="site-title" id="postTitle" style="text-align:left; font-size:2em; margin-bottom:4px;"></h1>
+        <span class="site-title-decor" style="margin:0 0 28px 0;"></span>
+
+        <!-- Rendered Content -->
+        <article class="post-content" id="postContent">
+            <p style="text-align:center;color:var(--text-tertiary);padding:40px 0;">
+                <i class="fa-solid fa-spinner fa-spin"></i> 加载中...
+            </p>
+        </article>
+    </main>
+
+    <!-- ============ RIGHT: TOC Sidebar ============ -->
+    <aside class="side-panel glass">
+        <div class="side-section">
+            <div class="side-title"><i class="fa-solid fa-list-ul"></i> 文章目录</div>
+            <nav id="tocNav">
+                <p class="toc-empty" id="tocEmpty">正在生成目录...</p>
+            </nav>
+        </div>
+
+        <!-- Other posts quick nav -->
+        <div class="side-section">
+            <div class="side-title"><i class="fa-solid fa-link"></i> 其他文章</div>
+            <ul class="quick-nav" id="otherPostsNav">
+                <!-- Filled by JS -->
+            </ul>
+        </div>
+    </aside>
+</div>
+
+    <!-- Post page logic -->
+    <script src="js/post.js"></script>
+
+    <!-- ============ 桌宠 DeskPet（透明背景舞蹈，固定左下角） ============ -->
+    <script src="js/deskpet.js"></script>
+
+</body>
+</html>

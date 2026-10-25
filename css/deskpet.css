@@ -1,0 +1,192 @@
+/* ================================================================
+   桌宠 DeskPet — 透明背景动作视频，固定左下角，不可拖动
+   ------------------------------------------------------------------
+   结构（由 js/deskpet.js 动态生成）：
+     .deskpet                     ← 固定在左下角，data-action 标记当前动作
+       .deskpet-stage             ← 高 = --pet-size，宽按素材比例自适应
+         video.deskpet-video × N  ← 三个动作各一条，同一时刻只有一条可见
+       .deskpet-menu              ← 右键菜单（转圈/比心/趴墙/保持）
+
+   视频为带 alpha 通道的 WebM（VP9 yuva420p），背景已抠除。
+   "趴墙"素材里墙体左缘就是画面左缘，所以该状态下容器 left 归 0，
+   墙正好贴在屏幕左边缘；其余动作留 6px 呼吸位。
+   ================================================================ */
+
+.deskpet {
+    position: fixed;
+    left: 6px;
+    bottom: 0;
+    z-index: 900;
+    pointer-events: none;         /* 整块对鼠标透明：正文不会被挡住，可正常划选复制 */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    opacity: 0;
+    transition: opacity 0.45s ease, left 0.28s ease;
+    --pet-size: 240px;
+    --stage-ratio: 1;             /* 宽 / 高，由 JS 按素材实际比例填写 */
+}
+
+/* 趴墙：墙体贴住屏幕左边缘 */
+.deskpet[data-action="wall"] { left: 0; }
+
+.deskpet.is-ready { opacity: 1; }
+
+.deskpet-stage {
+    position: relative;
+    height: var(--pet-size);
+    width: calc(var(--pet-size) * var(--stage-ratio));
+    margin-bottom: 6px;
+    animation: deskpet-breathe 4.6s ease-in-out infinite;
+    transition: width 0.28s ease;
+}
+
+/* 趴墙是"靠在墙上"的静态姿态，不做上下浮动 */
+.deskpet[data-action="wall"] .deskpet-stage { animation: none; margin-bottom: 0; }
+
+.deskpet-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: left bottom;
+    opacity: 0;
+    transition: opacity 0.26s ease;
+    /* 关键：整个桌宠对鼠标完全透明，正文可以正常划选/点击/拖拽。
+       右键菜单改为在 document 层按坐标命中（见 deskpet.js），不依赖这里收事件 */
+    pointer-events: none;
+    outline: none;
+    border: 0;
+    background: transparent;
+    filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.28));
+    -webkit-user-drag: none;
+}
+
+.deskpet-video.is-active { opacity: 1; }
+
+@keyframes deskpet-breathe {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-5px); }
+}
+
+/* 轻提示：给"保持"这种不改变画面的操作一个可见反馈 */
+.deskpet-toast {
+    position: absolute;
+    left: 4px;
+    bottom: calc(100% + 2px);
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.84);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    pointer-events: none;
+}
+
+.deskpet-toast.show { opacity: 1; transform: translateY(0); }
+
+/* ---------------- 右键菜单 ---------------- */
+.deskpet-menu {
+    position: fixed;
+    z-index: 902;
+    min-width: 132px;
+    padding: 6px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    transform-origin: bottom left;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    pointer-events: none;
+    font-size: 13.5px;
+    line-height: 1;
+    color: #26303f;
+}
+
+.deskpet-menu.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.deskpet-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.deskpet-menu-item:hover,
+.deskpet-menu-item:focus-visible {
+    background: rgba(59, 130, 246, 0.12);
+    outline: none;
+}
+
+.deskpet-menu-tick {
+    width: 14px;
+    flex: 0 0 14px;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.deskpet-menu-mark {
+    margin-left: -2px;
+    font-size: 12.5px;
+    line-height: 1;
+}
+
+/* 比心的红心：用纯文本 ♥ 染色，保证一定是红的（emoji 会跟着系统字库变样） */
+.deskpet-menu-mark-heart {
+    color: #e11d48;
+    font-size: 13px;
+}
+
+.deskpet-menu-sep {
+    height: 1px;
+    margin: 5px 6px;
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.deskpet-menu-hint {
+    margin-left: auto;
+    padding-left: 10px;
+    color: #94a3b8;
+    font-size: 11.5px;
+}
+
+/* 已保持：提示文字点亮，让"不再自动切换"这个状态在菜单里可见 */
+.deskpet-menu-hint.on {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1024px) { .deskpet { --pet-size: 200px; } }
+@media (max-width: 720px)  { .deskpet { --pet-size: 148px; } }
+@media (max-width: 480px)  { .deskpet { --pet-size: 116px; } }
+
+/* 菜单配色跟随站点（本站为固定浅色主题），不跟随系统深色偏好，
+   否则浅色页面上突然弹出一块深色面板会很突兀 */
+@media (prefers-reduced-motion: reduce) {
+    .deskpet-stage { animation: none; }
+    .deskpet, .deskpet-video, .deskpet-menu { transition: none; }
+}

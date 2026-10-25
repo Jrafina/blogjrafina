@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jrafina的博客小站</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Waline CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css">
+    <!-- Blog styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 桌宠 -->
+    <link rel="stylesheet" href="css/deskpet.css">
+    <!-- Favicon -->
+    <link rel="icon" href="https://img-proxy.ppig.eu.cc/drawingbed/2026/04/头像.ico" type="image/x-icon">
+
+    <!-- Posts manifest -->
+    <script src="posts/posts.js"></script>
+</head>
+<body>
+
+<!-- Layout -->
+<div class="page-wrap">
+
+    <!-- ============ LEFT: Main Content ============ -->
+    <main class="main-panel glass-strong">
+
+        <!-- Header -->
+        <header class="site-header">
+            <h1 class="site-title">Jrafina 的博客小站</h1>
+            <p class="site-subtitle">技术笔记 · 学习总结 · 生活记录</p>
+            <span class="site-title-decor"></span>
+        </header>
+
+        <!-- Category Tabs -->
+        <nav class="category-tabs" id="categoryTabs">
+            <button class="cat-tab active" data-cat="all">全部文章</button>
+            <button class="cat-tab" data-cat="tutorials">📘 教程归纳</button>
+            <button class="cat-tab" data-cat="learning">📚 学习合集</button>
+        </nav>
+
+        <!-- Search Bar -->
+        <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索文章标题、描述、关键词...">
+        </div>
+
+        <!-- Keyword Filter Bar -->
+        <div class="filter-bar hidden" id="filterBar">
+            <span>🔍 关键词筛选：</span>
+            <span id="filterKwTags"></span>
+            <button class="clear-btn" id="clearKwBtn"><i class="fa-solid fa-xmark"></i> 清除</button>
+        </div>
+
+        <!-- Post List -->
+        <ul class="post-list" id="postList"></ul>
+
+        <!-- No Results -->
+        <div class="no-results" id="noResults">
+            <i class="fa-solid fa-inbox"></i>
+            <p>没有找到匹配的文章</p>
+            <p style="font-size:0.9em;margin-top:8px;">试试其他关键词或清除筛选条件</p>
+        </div>
+
+        <!-- Comments -->
+        <section class="comments-section glass-card" style="margin-top:40px;">
+            <div class="comments-title">💬 留言板</div>
+            <div id="waline"></div>
+        </section>
+    </main>
+
+    <!-- ============ RIGHT: Side Panel ============ -->
+    <aside class="side-panel glass">
+
+        <!-- Author -->
+        <div class="side-author">
+            <div class="side-avatar">
+                <img src="https://img.1795857.xyz/file/博客头像/videoframe_1079.png" alt="作者头像">
+            </div>
+            <div class="side-name">Jrafina</div>
+            <div class="side-email">✉ Jrafina@outlook.com</div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="side-section">
+            <div class="side-title"><i class="fa-solid fa-link"></i> 快速导航</div>
+            <ul class="quick-nav" id="quickNav">
+                <!-- Dynamically filled from POSTS -->
+            </ul>
+        </div>
+
+        <!-- Tips -->
+        <div class="side-section">
+            <div class="side-title"><i class="fa-solid fa-lightbulb"></i> Tips 总结</div>
+            <div class="tip-item-mini">
+                <strong>PyInstaller 打包</strong>
+                <code>pyinstaller --onefile your_script.py</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>刷新 DNS 缓存</strong>
+                <code>ipconfig /flushdns</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>配置清华源</strong>
+                <code>pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>注册表清理路径</strong>
+                <code>计算机\HKEY_CLASSES_ROOT\Directory\Background\shell\</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>键盘失能（管理员）</strong>
+                <code>sc config i8042prt start= disabled</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>键盘使能（管理员）</strong>
+                <code>sc config i8042prt start= auto</code>
+            </div>
+            <div class="tip-item-mini">
+                <strong>Python 虚拟环境</strong>
+                <code>.venv\Scripts\activate</code>
+            </div>
+        </div>
+
+    </aside>
+</div>
+
+<!-- ============ Waline Comments ============ -->
+<script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+    init({
+        el: '#waline',
+        serverURL: 'https://comment2.1795857.xyz',
+        dark: false,
+        meta: ['nick', 'mail', 'link'],
+        requiredMeta: ['nick'],
+        lang: 'zh-CN',
+        placeholder: '欢迎留言...',
+        emoji: [],
+    });
+</script>
+
+<!-- ============ Main Script ============ -->
+<script src="js/app.js"></script>
+<script>
+(function() {
+    // --- State ---
+    let activeCat = 'all';
+    let activeKws = new Set();
+    let searchTerm = '';
+
+    // --- DOM ---
+    const postList = document.getElementById('postList');
+    const quickNav   = document.getElementById('quickNav');
+    const searchInput = document.getElementById('searchInput');
+    const filterBar   = document.getElementById('filterBar');
+    const filterKwTags = document.getElementById('filterKwTags');
+    const clearKwBtn  = document.getElementById('clearKwBtn');
+    const noResults   = document.getElementById('noResults');
+
+    // --- Build keyword index from POSTS ---
+    const allKeywords = [...new Set(POSTS.flatMap(p => p.keywords || []))].sort();
+
+    // --- Build post list HTML ---
+    function buildPostItem(post, index) {
+        const kwTags = (post.keywords || []).map(kw =>
+            `<span class="kw-tag" data-kw="${kw}">${kw}</span>`
+        ).join('');
+
+        // 封面：奇偶交错，第 0/2/4... 项图片在左，第 1/3/5... 项图片在右
+        const side = index % 2 === 0 ? 'left' : 'right';
+        const coverHtml = post.cover ? `
+            <div class="post-cover-wrap">
+                <img src="${post.cover}" alt="${post.title} 封面" class="post-cover" loading="lazy">
+            </div>` : '';
+
+        return `
+        <li class="post-item glass-card" data-side="${side}"
+            data-cat="${post.category}"
+            data-keywords="${(post.keywords || []).join(',')}"
+            data-title="${post.title.toLowerCase()}"
+            data-desc="${post.desc.toLowerCase()}">
+
+            ${coverHtml}
+            <div class="post-body">
+                <a href="post.html?post=${encodeURIComponent(post.file)}" class="post-title-link">
+                    ${post.title}
+                </a>
+                <span class="post-tag ${post.category}">
+                    ${post.category === 'tutorials' ? '教程归纳' : '学习合集'}
+                </span>
+                <span class="post-date">${post.date}</span>
+                <p class="post-desc">${post.desc}</p>
+                <div class="post-keywords">${kwTags}</div>
+            </div>
+        </li>`;
+    }
+
+    function buildQuickNavItem(post) {
+        return `<li><a href="post.html?post=${encodeURIComponent(post.file)}">${post.title}</a></li>`;
+    }
+
+    // --- Render ---
+    function renderPosts() {
+        postList.innerHTML = POSTS.map((post, i) => buildPostItem(post, i)).join('');
+        quickNav.innerHTML = POSTS.map(buildQuickNavItem).join('');
+        bindKwTagClicks();
+    }
+
+    // --- Filter ---
+    function doFilter() {
+        const items = postList.querySelectorAll('.post-item');
+        let visible = 0;
+
+        items.forEach(item => {
+            const cat = item.dataset.cat;
+            const kws = item.dataset.keywords.toLowerCase();
+            const title = item.dataset.title;
+            const desc = item.dataset.desc;
+
+            const catOk = activeCat === 'all' || cat === activeCat;
+
+            const kwOk = activeKws.size === 0 ||
+                [...activeKws].some(kw => kws.includes(kw.toLowerCase()));
+
+            const searchOk = searchTerm === '' ||
+                title.includes(searchTerm) || desc.includes(searchTerm) ||
+                kws.includes(searchTerm);
+
+            if (catOk && kwOk && searchOk) {
+                item.style.display = '';
+                item.style.animation = 'fadeSlideIn 0.4s ease forwards';
+                visible++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        noResults.classList.toggle('show', visible === 0);
+    }
+
+    // --- Update keyword filter bar ---
+    function updateFilterBar() {
+        if (activeKws.size === 0) {
+            filterBar.classList.add('hidden');
+        } else {
+            filterBar.classList.remove('hidden');
+            filterKwTags.innerHTML = [...activeKws].map(kw =>
+                `<span class="kw-tag active" data-kw="${kw}">${kw}</span>`
+            ).join('');
+            // Re-bind clicks for removal
+            filterKwTags.querySelectorAll('.kw-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    activeKws.delete(tag.dataset.kw);
+                    updateAllKwVisuals();
+                    updateFilterBar();
+                    doFilter();
+                });
+            });
+        }
+    }
+
+    function updateAllKwVisuals() {
+        // Sync .kw-tag in post list
+        postList.querySelectorAll('.kw-tag').forEach(tag => {
+            tag.classList.toggle('active', activeKws.has(tag.dataset.kw));
+        });
+    }
+
+    // --- Bind keyword tag clicks on post items ---
+    function bindKwTagClicks() {
+        postList.querySelectorAll('.kw-tag').forEach(tag => {
+            tag.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const kw = tag.dataset.kw;
+                if (activeKws.has(kw)) {
+                    activeKws.delete(kw);
+                } else {
+                    activeKws.add(kw);
+                }
+                updateAllKwVisuals();
+                updateFilterBar();
+                doFilter();
+            });
+        });
+    }
+
+    // --- Category tabs ---
+    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+        const btn = e.target.closest('.cat-tab');
+        if (!btn) return;
+        document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCat = btn.dataset.cat;
+        doFilter();
+    });
+
+    // --- Search ---
+    searchInput.addEventListener('input', () => {
+        searchTerm = searchInput.value.toLowerCase().trim();
+        doFilter();
+    });
+
+    // --- Clear keywords ---
+    clearKwBtn.addEventListener('click', () => {
+        activeKws.clear();
+        updateAllKwVisuals();
+        updateFilterBar();
+        doFilter();
+    });
+
+    // --- Init ---
+    renderPosts();
+
+    // Inject fadeSlideIn keyframe
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+})();
+</script>
+
+<!-- ============ 桌宠 DeskPet（透明背景舞蹈，固定左下角） ============ -->
+<script src="js/deskpet.js"></script>
+</body>
+</html>
