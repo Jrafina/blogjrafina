@@ -4,6 +4,15 @@
 
 const POSTS = [
   {
+    file: "EasyTier-NAS-部署手册.md",
+    title: "飞牛端用frp中转EasyTier",
+    date: "2026-10-28",
+    category: "tutorials",
+    desc: "飞牛端用frp中转EasyTier",
+    keywords: ["EasyTier", "frp","飞牛"],
+    cover: "https://img.1795857.xyz/file/%E5%8D%9A%E5%AE%A2/%E9%A3%9E%E7%89%9B%E7%AB%AF%E7%94%A8frp%E4%B8%AD%E8%BD%ACEasyTier/1793192303700_EasyTier-NAS-%E9%83%A8%E7%BD%B2%E6%89%8B%E5%86%8C-%E5%B0%81%E9%9D%A2.jpg"
+  },
+  {
     file: "EasyTier中转节点部署总结.md",
     title: "EasyTier中转节点部署",
     date: "2026-10-22",
